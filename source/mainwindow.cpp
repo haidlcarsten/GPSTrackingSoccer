@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
   ui->setupUi(this);
   createMenusAndActions();
+  statusBar()->hide();
 
 }
 
@@ -45,7 +46,7 @@ void MainWindow::showFileOpenDialogMannschaftA()
     filePath = filePath.section('/', 0, -2);
   }
 
-  qDebug() << fileNames;
+ a.neueSpieler(fileNames);
 }
 
 void MainWindow::showFileOpenDialogMannschaftB()
@@ -64,5 +65,5 @@ void MainWindow::showFileOpenDialogMannschaftB()
     filePath = filePath.section('/', 0, -2);
   }
 
-  qDebug() << fileNames;
+  b.neueSpieler(fileNames);
 }

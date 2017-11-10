@@ -13,6 +13,7 @@ public:
   void displaySpieler();
 
   void neuerSpieler(QString aPfad);
+  void neueSpieler(QStringList aPfade);
 
 signals:
 

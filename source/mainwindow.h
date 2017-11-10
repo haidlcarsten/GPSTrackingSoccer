@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "mannschaft.h"
 
 namespace Ui {
 class MainWindow;
@@ -19,6 +20,9 @@ private:
   Ui::MainWindow *ui;
 
   void createMenusAndActions();
+
+  Mannschaft a;
+  Mannschaft b;
 
 public slots:
   void showFileOpenDialogMannschaftA();

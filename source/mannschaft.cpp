@@ -11,3 +11,11 @@ void Mannschaft::neuerSpieler(QString aPfad)
 
   this->mListSpieler.append(&person);
 }
+
+void Mannschaft::neueSpieler(QStringList aPfade)
+{
+  foreach (auto element, aPfade)
+  {
+    this->neuerSpieler(element);
+  }
+}
