@@ -54,7 +54,7 @@ QLayout* Mannschaft::displaySpieler()
     });
     number++;
 
-    connect(cbSelect, &QCheckBox::pressed, person, &Spieler::displayData);
+    connect(cbSelect, &QCheckBox::clicked, person, &Spieler::displayData);
   }
 
   return resultLayout;

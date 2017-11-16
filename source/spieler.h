@@ -14,11 +14,13 @@ public:
   QString getName();
   void setChartWidget(ChartWidget* aWidget) {this->mChartWidget = aWidget;}
   void setSlider(QSlider* aSlider) {this->mSlider = aSlider;}
+  void setSliderValues(int aMin, int aMax, int aValue);
 
 signals:
 
 public slots:
-  void displayData();
+  void displayData(bool aDisplay);
+  void displayFrameData(int aTime);
 
 private:
    QString mSpielername;
