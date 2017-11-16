@@ -26,11 +26,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES +=  source/main.cpp\
             source/mainwindow.cpp \
             source/mannschaft.cpp \
-            source/spieler.cpp
+            source/spieler.cpp \
+            source/chartwidget.cpp
+
 
 HEADERS  += source/mainwindow.h \
             source/mannschaft.h \
             source/spieler.h \
-            source/typedef.h
+            source/typedef.h \
+            source/chartwidget.h
 
-FORMS    += ui\mainwindow.ui
+FORMS    += ui/mainwindow.ui\
+            ui/chartwidget.ui

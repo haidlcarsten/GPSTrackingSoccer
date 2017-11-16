@@ -1,7 +1,7 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -9,9 +9,18 @@ MainWindow::MainWindow(QWidget *parent) :
   ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
-  createMenusAndActions();
-  statusBar()->hide();
+  this->mChartWidget = new ChartWidget(ui->centralWidget);
 
+  this->mMannschaftHeim.setChartWidget(this->mChartWidget);
+  this->mMannschaftHeim.setSlider(ui->horizontalSlider);
+
+  this->mMannschaftGegner.setChartWidget(this->mChartWidget);
+  this->mMannschaftGegner.setSlider(ui->horizontalSlider);
+
+  createMenusAndActions();
+
+  connect(&mMannschaftHeim, &Mannschaft::playerChanged, this, &MainWindow::reDrawSpielerList);
+  connect(&mMannschaftGegner, &Mannschaft::playerChanged, this, &MainWindow::reDrawSpielerList);
 }
 
 MainWindow::~MainWindow()
@@ -24,13 +33,16 @@ void MainWindow::createMenusAndActions()
 {
   // File menu
   QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
-  fileMenu->addAction("&Mannschaft A...", this, SLOT(showFileOpenDialogMannschaftA()), Qt::CTRL + Qt::Key_O);
-  fileMenu->addAction("&Mannschaft B...", this, SLOT(showFileOpenDialogMannschaftB()), Qt::CTRL + Qt::Key_O);
+  fileMenu->addAction("&Heim-Mannschaft laden...", this, SLOT(showFileOpenDialogMannschaftHeim()));
+  fileMenu->addAction("&Gegner-Mannschaft laden...", this, SLOT(showFileOpenDialogMannschaftGegner()));
+  fileMenu->addSeparator();
+  fileMenu->addAction("&Spieler laden...", this, SLOT(showFileOpenDialogAddPlayer()));
   fileMenu->addSeparator();
   fileMenu->addAction("Exit", this, SLOT(close()));
 
 }
-void MainWindow::showFileOpenDialogMannschaftA()
+
+QStringList MainWindow::showFileOpenDialog()
 {
   QFileDialog openDialog(this);
   openDialog.setFileMode(QFileDialog::ExistingFiles);
@@ -39,31 +51,59 @@ void MainWindow::showFileOpenDialogMannschaftA()
   if (openDialog.exec())
     fileNames = openDialog.selectedFiles();
 
-  if (fileNames.count() > 0)
-  {
-    // save last used directory with QPreferences
-    QString filePath = fileNames.at(0);
-    filePath = filePath.section('/', 0, -2);
-  }
-
- a.neueSpieler(fileNames);
+  return fileNames;
 }
 
-void MainWindow::showFileOpenDialogMannschaftB()
+void MainWindow::showFileOpenDialogMannschaftHeim()
 {
-  QFileDialog openDialog(this);
-  openDialog.setFileMode(QFileDialog::ExistingFiles);
+  QStringList fileNames = this->showFileOpenDialog();
 
-  QStringList fileNames;
-  if (openDialog.exec())
-    fileNames = openDialog.selectedFiles();
+  this->mMannschaftHeim.neueSpieler(fileNames);
+  this->reDrawSpielerList();
+}
 
-  if (fileNames.count() > 0)
-  {
-    // save last used directory with QPreferences
-    QString filePath = fileNames.at(0);
-    filePath = filePath.section('/', 0, -2);
+void MainWindow::showFileOpenDialogMannschaftGegner()
+{
+  QStringList fileNames = this->showFileOpenDialog();
+
+  this->mMannschaftGegner.neueSpieler(fileNames);
+  this->reDrawSpielerList();
+}
+
+void MainWindow::showFileOpenDialogAddPlayer()
+{
+  QMessageBox msgBox;
+  msgBox.setText("Sollen der Heim-Mannschaft Spieler hinzugefügt werden?");
+  msgBox.setInformativeText("Bei Wahl von \"Ja\" werden der Heim-Mannschaft Spieler hinzugefügt, bei der Wahl von \"Nein\" werden der Gegner-Mannschaft Spieler hinzugefügt.");
+  msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Abort);
+  msgBox.setDefaultButton(QMessageBox::Yes);
+  int ret = msgBox.exec();
+
+  switch (ret) {
+    case QMessageBox::Yes:
+      // Yes was clicked
+      this->showFileOpenDialogMannschaftHeim();
+      break;
+    case QMessageBox::No:
+      // No was clicked
+      this->showFileOpenDialogMannschaftGegner();
+      break;
+    default:
+      // should never be reached
+      break;
   }
+}
 
-  b.neueSpieler(fileNames);
+void MainWindow::reDrawSpielerList()
+{
+  if(ui->dockWidgetContentsHeim->layout())
+    delete ui->dockWidgetContentsHeim->layout();
+
+  ui->dockWidgetContentsHeim->setLayout(this->mMannschaftHeim.displaySpieler());
+
+
+  if(ui->dockWidgetContentsGegner->layout())
+    delete ui->dockWidgetContentsGegner->layout();
+
+  ui->dockWidgetContentsGegner->setLayout(this->mMannschaftGegner.displaySpieler());
 }

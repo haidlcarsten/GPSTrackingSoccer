@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include "mannschaft.h"
+#include "ui_mainwindow.h"
+#include "chartwidget.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -18,15 +21,21 @@ public:
 
 private:
   Ui::MainWindow *ui;
+  ChartWidget* mChartWidget;
 
   void createMenusAndActions();
+  QStringList showFileOpenDialog();
 
-  Mannschaft a;
-  Mannschaft b;
+  Mannschaft mMannschaftHeim;
+  Mannschaft mMannschaftGegner;
 
-public slots:
-  void showFileOpenDialogMannschaftA();
-  void showFileOpenDialogMannschaftB();
+public slots:  
+  void showFileOpenDialogMannschaftHeim();
+  void showFileOpenDialogMannschaftGegner();
+  void showFileOpenDialogAddPlayer();
+  void reDrawSpielerList();
+
+
 };
 
 #endif // MAINWINDOW_H
