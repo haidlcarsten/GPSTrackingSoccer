@@ -13,10 +13,14 @@ QString Spieler::getName()
   return this->mSpielername;
 }
 
+void Spieler::setSlider(QSlider *aSlider)
+{
+  this->mSlider = aSlider;
+  connect(this->mSlider, &QSlider::valueChanged, this, &Spieler::displayFrameData);
+}
+
 void Spieler::displayData(bool aDisplay)
 {
-  connect(this->mSlider, &QSlider::valueChanged, this, &Spieler::displayFrameData);
-
   qDebug() << "void Spieler::displayData()";
   qDebug() << this->mSpielername;
 
@@ -25,6 +29,7 @@ void Spieler::displayData(bool aDisplay)
   {
     test = new QWidget;
     QLabel* lbl = new QLabel(this->mSpielername);
+    lbl->setWordWrap(true);
 
     QVBoxLayout* layout = new QVBoxLayout(test);
     layout->addWidget(lbl);
