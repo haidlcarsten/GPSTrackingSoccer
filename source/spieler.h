@@ -4,6 +4,9 @@
 #include <QObject>
 #include "chartwidget.h"
 #include <qdebug.h>
+#include"typedef.h"
+#include <QObject>
+#include <QMap>
 
 class Spieler : public QObject
 {
@@ -15,6 +18,8 @@ public:
   void setChartWidget(ChartWidget* aWidget) {this->mChartWidget = aWidget;}
   void setSlider(QSlider* aSlider);
   void setSliderValues(int aMin, int aMax, int aValue);
+  void parseData ();
+
 
 signals:
 
@@ -26,6 +31,9 @@ private:
    QString mSpielername;
    ChartWidget* mChartWidget;
    QSlider* mSlider;
+   QString mPfad;
+   QMap<int,parsedData> playerData;
+
 };
 
 #endif // SPIELER_H
