@@ -12,12 +12,10 @@
 
 Spieler::Spieler(QString aPfad)
 { 
-    this->mPfad = aPfad;
-    QFileInfo info(aPfad);
-    this->mSpielername = info.fileName();
-    this->parseData();
-
-
+  this->mPfad = aPfad;
+  QFileInfo info(aPfad);
+  this->mSpielername = info.fileName();
+  this->parseData();
 }
 
 QString Spieler::getName()
@@ -103,6 +101,7 @@ void Spieler::parseData()
      int timestamp = elements[0].toInt();
      data.activityType = elements[1].toInt();
 
+     // check if we reach the end
      if(data.activityType == -1)
          break;
 
@@ -119,18 +118,21 @@ void Spieler::parseData()
 
      playerData.insert(timestamp,data);
     }
-    foreach (int timestamp, playerData.keys()) {
-        parsedData data =  playerData.value(timestamp);
 
-         qDebug() << data.lapNumber ;
-        qDebug() << data.distance ;
-         qDebug() <<data.speed ;
-         qDebug() <<data.calories ;
-         qDebug() <<data.x_value ;
-         qDebug() <<data.y_value;
-        qDebug() << data.elevation ;
-        qDebug() << data.heartRate ;
-        qDebug() << data.cycles ;
+    // a debug output
+    foreach (int timestamp, playerData.keys())
+    {
+      parsedData data =  playerData.value(timestamp);
+
+      qDebug() << data.lapNumber ;
+      qDebug() << data.distance ;
+      qDebug() <<data.speed ;
+      qDebug() <<data.calories ;
+      qDebug() <<data.x_value ;
+      qDebug() <<data.y_value;
+      qDebug() << data.elevation ;
+      qDebug() << data.heartRate ;
+      qDebug() << data.cycles ;
     }
 
 }

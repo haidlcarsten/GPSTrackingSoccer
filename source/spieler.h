@@ -18,7 +18,7 @@ public:
   void setChartWidget(ChartWidget* aWidget) {this->mChartWidget = aWidget;}
   void setSlider(QSlider* aSlider);
   void setSliderValues(int aMin, int aMax, int aValue);
-  void parseData ();
+  void parseData();
 
 
 signals:
