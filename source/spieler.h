@@ -20,6 +20,11 @@ public:
   void setSliderValues(int aMin, int aMax, int aValue);
   void parseData();
 
+  float getSpeed();
+  float average_speed();  //calculate average_speed of the player
+
+  float getHeartRate();
+  float average_heartRate();  //calculate average_heartrate of the player
 
 signals:
 
@@ -33,6 +38,9 @@ private:
    QSlider* mSlider;
    QString mPfad;
    QMap<int,parsedData> playerData;
+   double a_speed; //average speed
+   float a_hrate; //average heartrate
+
 
 };
 

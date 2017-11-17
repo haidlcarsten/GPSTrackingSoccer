@@ -16,12 +16,48 @@ Spieler::Spieler(QString aPfad)
   QFileInfo info(aPfad);
   this->mSpielername = info.fileName();
   this->parseData();
+  this->a_speed = 0;
+  this->a_hrate = 0;
 }
 
 QString Spieler::getName()
 {
   return this->mSpielername;
 }
+
+float Spieler::getSpeed()
+{
+  return this->a_speed;
+}
+
+float Spieler::average_speed()
+{
+    double speed_sum = 0;
+    foreach (int timestamp, playerData.keys())
+    {
+      speed_sum = speed_sum + playerData.value(timestamp).speed;
+    }
+    a_speed = speed_sum / playerData.lastKey();
+    return a_speed;
+}
+
+float Spieler::average_heartRate()
+{
+    float heartrate_sum = 0;
+    foreach (int timestamp, playerData.keys())
+    {
+      heartrate_sum = heartrate_sum + playerData.value(timestamp).heartRate;
+    }
+
+    a_hrate = heartrate_sum/ playerData.lastKey();
+    return a_hrate;
+}
+
+float Spieler::getHeartRate()
+{
+  return this->a_hrate;
+}
+
 
 void Spieler::setSlider(QSlider *aSlider)
 {
@@ -120,19 +156,19 @@ void Spieler::parseData()
     }
 
     // a debug output
-    foreach (int timestamp, playerData.keys())
-    {
-      parsedData data =  playerData.value(timestamp);
+//    foreach (int timestamp, playerData.keys())
+//    {
+//      parsedData data =  playerData.value(timestamp);
 
-      qDebug() << data.lapNumber ;
-      qDebug() << data.distance ;
-      qDebug() <<data.speed ;
-      qDebug() <<data.calories ;
-      qDebug() <<data.x_value ;
-      qDebug() <<data.y_value;
-      qDebug() << data.elevation ;
-      qDebug() << data.heartRate ;
-      qDebug() << data.cycles ;
-    }
+//      qDebug() << data.lapNumber ;
+//      qDebug() << data.distance ;
+//      qDebug() <<data.speed ;
+//      qDebug() <<data.calories ;
+//      qDebug() <<data.x_value ;
+//      qDebug() <<data.y_value;
+//      qDebug() << data.elevation ;
+//      qDebug() << data.heartRate ;
+//      qDebug() << data.cycles ;
+//    }
 
 }

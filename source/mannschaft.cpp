@@ -15,6 +15,10 @@ void Mannschaft::neuerSpieler(QString aPfad)
   Spieler* person = new Spieler(aPfad);
   person->setChartWidget(this->mChartWidget);
   person->setSlider(this->mSlider);
+  person->average_speed();
+  person->getSpeed();
+  person->average_heartRate();
+  person->getHeartRate();
 
   this->mListSpieler.append(person);
 }
