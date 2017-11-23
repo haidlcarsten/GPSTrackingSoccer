@@ -33,6 +33,8 @@ public slots:
   void showFileOpenDialogMannschaftGegner();
   void showFileOpenDialogAddPlayer();
   void reDrawSpielerList();
+  void showHelpMenuDialog();
+  void showInformationDialog();
 
 
 };

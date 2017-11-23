@@ -79,9 +79,6 @@ win32 {
     RCC_DIR = $$DESTDIR/.qrc
     UI_DIR = $$DESTDIR/.ui
 
-    #QMAKE_LFLAGS_DEBUG    = /INCREMENTAL:NO
-    RC_FILE += images/WindowsAppIcon.rc
-
     SVNN = $$system("git describe --tags")
     DEFINES += NOMINMAX
 }
