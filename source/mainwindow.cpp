@@ -9,12 +9,11 @@ MainWindow::MainWindow(QWidget *parent) :
   ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
-  this->mChartWidget = new ChartWidget(ui->centralWidget);
 
-  this->mMannschaftHeim.setChartWidget(this->mChartWidget);
+  this->mMannschaftHeim.setChartWidget(ui->widget);
   this->mMannschaftHeim.setSlider(ui->horizontalSlider);
 
-  this->mMannschaftGegner.setChartWidget(this->mChartWidget);
+  this->mMannschaftGegner.setChartWidget(ui->widget);
   this->mMannschaftGegner.setSlider(ui->horizontalSlider);
 
   createMenusAndActions();
@@ -96,14 +95,9 @@ void MainWindow::showFileOpenDialogAddPlayer()
 
 void MainWindow::reDrawSpielerList()
 {
-  if(ui->dockWidgetContentsHeim->layout())
-    delete ui->dockWidgetContentsHeim->layout();
+  auto  widget = this->mMannschaftHeim.displaySpieler();
+  ui->dockWidgetContentsHeim->setChartWidget(widget);
 
-  ui->dockWidgetContentsHeim->setLayout(this->mMannschaftHeim.displaySpieler());
-
-
-  if(ui->dockWidgetContentsGegner->layout())
-    delete ui->dockWidgetContentsGegner->layout();
-
-  ui->dockWidgetContentsGegner->setLayout(this->mMannschaftGegner.displaySpieler());
+  widget = this->mMannschaftGegner.displaySpieler();
+  ui->dockWidgetContentsGegner->setChartWidget(widget);
 }

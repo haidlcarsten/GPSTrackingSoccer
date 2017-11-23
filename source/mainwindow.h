@@ -21,7 +21,6 @@ public:
 
 private:
   Ui::MainWindow *ui;
-  ChartWidget* mChartWidget;
 
   void createMenusAndActions();
   QStringList showFileOpenDialog();

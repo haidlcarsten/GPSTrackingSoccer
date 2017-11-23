@@ -29,37 +29,25 @@ void Mannschaft::neueSpieler(QStringList aPfade)
     this->neuerSpieler(element);
 }
 
-QLayout* Mannschaft::displaySpieler()
+QWidget* Mannschaft::displaySpieler()
 {
+  QWidget* widget = new QWidget();
   // create the layout, to palce the Spieler-objects
   QFormLayout* resultLayout = new QFormLayout;
 
   //add every player
-  int number = 0;
   foreach (Spieler* person, this->mListSpieler)
   {
-    QHBoxLayout* layout = new QHBoxLayout();
-
     // element, we can react to
     QCheckBox* cbSelect = new QCheckBox(person->getName(), NULL);
     cbSelect->setChecked(false);
 
-    QPushButton* btnDelete = new QPushButton("Entfernen", NULL);
-    layout->addWidget(cbSelect);
-    layout->addWidget(btnDelete);
-
     // add the elements to the widget
-    resultLayout->addRow(layout);
-
-    // do an connect to react to the click of the checkbox
-    connect(btnDelete, &QPushButton::pressed, [=]{
-      this->mListSpieler.removeAt(number);
-      emit playerChanged();
-    });
-    number++;
+    resultLayout->addRow(cbSelect);
 
     connect(cbSelect, &QCheckBox::clicked, person, &Spieler::displayData);
   }
 
-  return resultLayout;
+  widget->setLayout(resultLayout);
+  return widget;
 }

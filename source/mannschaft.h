@@ -13,7 +13,7 @@ class Mannschaft : public QObject
 public:
   explicit Mannschaft(QObject *parent = 0);
 
-  QLayout* displaySpieler();
+  QWidget *displaySpieler();
 
   void neuerSpieler(QString aPfad);
   void neueSpieler(QStringList aPfade);
