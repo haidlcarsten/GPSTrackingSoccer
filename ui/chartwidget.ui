@@ -1,21 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <author/>
- <comment/>
- <exportmacro/>
  <class>ChartWidget</class>
- <widget class="QWidget" name="ChartWidget">
+ <widget class="QDockWidget" name="ChartWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>827</width>
+    <height>582</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>&amp;ChartDockWidget</string>
   </property>
+  <widget class="QWidget" name="dockWidgetContents"/>
  </widget>
- <pixmapfunction/>
+ <resources/>
  <connections/>
 </ui>

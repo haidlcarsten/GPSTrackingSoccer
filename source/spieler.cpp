@@ -67,29 +67,36 @@ void Spieler::setSlider(QSlider *aSlider)
 
 void Spieler::displayData(bool aDisplay)
 {
-  qDebug() << "void Spieler::displayData()";
-  qDebug() << this->mSpielername;
-
-  QWidget* test;
+  QWidget* widgetToDisplay;
   if(aDisplay)
   {
-    test = new QWidget;
-    QLabel* lbl = new QLabel(this->mSpielername);
-    lbl->setWordWrap(true);
+    widgetToDisplay = new QWidget;
+    QGridLayout* layout = new QGridLayout(widgetToDisplay);
 
-    QVBoxLayout* layout = new QVBoxLayout(test);
-    layout->addWidget(lbl);
+    QLabel* lblName = new QLabel("Name:");
+    QLabel* lblSpielerName = new QLabel(this->getName());
+    layout->addWidget(lblName, 0, 0);
+    layout->addWidget(lblSpielerName, 0, 1);
 
-    this->setSliderValues(0, 200, 100);
+    QLabel* lblSpeedAvg = new QLabel("Durchschnittliche Geschwindigkeit:");
+    QLabel* lblSpielerSpeedAvg = new QLabel(QString::number(this->getSpeed()));
+    layout->addWidget(lblSpeedAvg, 1, 0);
+    layout->addWidget(lblSpielerSpeedAvg, 1, 1);
 
+    QLabel* lblHeartRateAvg = new QLabel("Durchschnittliche Herzrate:");
+    QLabel* lblSpielerHeartRateAvg = new QLabel(QString::number(this->getHeartRate()));
+    layout->addWidget(lblHeartRateAvg, 2, 0);
+    layout->addWidget(lblSpielerHeartRateAvg, 2, 1);
+
+    this->setSliderValues(this->playerData.firstKey(), this->playerData.lastKey(), 0);
   }
   else
   {
-    test = this->mChartWidget->getDefaultWidget();
+    widgetToDisplay = this->mChartWidget->getDefaultWidget();
     this->setSliderValues(0, 0, 0);
   }
 
-  this->mChartWidget->setChartWidget(test);
+  this->mChartWidget->setChartWidget(widgetToDisplay);
 }
 
 void Spieler::setSliderValues(int aMin, int aMax, int aValue)
@@ -105,15 +112,12 @@ void Spieler::setSliderValues(int aMin, int aMax, int aValue)
 
 void Spieler::displayFrameData(int aTime)
 {
-  qDebug() << aTime;
+
 }
+
+
 void Spieler::parseData()
 {
-//    for(QString::iterator iter = tData.begin(); iter != tData.end(); ++iter) //Zeilenumbrüche durch einen Komma ersetzen
-//    {
-//        if(*iter == '\n')
-//               *iter = ',';
-//    }
     QFile inputfile(this->mPfad);
     if(!inputfile.open(QIODevice::ReadOnly|QIODevice::Text))
         return;
@@ -123,7 +127,6 @@ void Spieler::parseData()
     bool firstline = true;
     while(!stream.atEnd())
     {
-//     line = line + stream.readLine() + ",";
      if(firstline)
      {
          firstline = false;

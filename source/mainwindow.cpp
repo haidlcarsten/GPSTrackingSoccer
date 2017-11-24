@@ -9,12 +9,11 @@ MainWindow::MainWindow(QWidget *parent) :
   ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
-  this->mChartWidget = new ChartWidget(ui->centralWidget);
 
-  this->mMannschaftHeim.setChartWidget(this->mChartWidget);
+  this->mMannschaftHeim.setChartWidget(ui->widget);
   this->mMannschaftHeim.setSlider(ui->horizontalSlider);
 
-  this->mMannschaftGegner.setChartWidget(this->mChartWidget);
+  this->mMannschaftGegner.setChartWidget(ui->widget);
   this->mMannschaftGegner.setSlider(ui->horizontalSlider);
 
   createMenusAndActions();
@@ -40,6 +39,10 @@ void MainWindow::createMenusAndActions()
   fileMenu->addSeparator();
   fileMenu->addAction("Exit", this, SLOT(close()));
 
+  QMenu* helpMenu = menuBar()->addMenu(tr("&Hilfe"));
+  helpMenu->addAction("Hilfe...", this, &MainWindow::showHelpMenuDialog);
+  helpMenu->addSeparator();
+  helpMenu->addAction("Information", this, &MainWindow::showInformationDialog);
 }
 
 QStringList MainWindow::showFileOpenDialog()
@@ -82,6 +85,11 @@ void MainWindow::showFileOpenDialogAddPlayer()
   msgBox.setInformativeText("Bei Wahl von \"Ja\" werden der Heim-Mannschaft Spieler hinzugefügt, bei der Wahl von \"Nein\" werden der Gegner-Mannschaft Spieler hinzugefügt.");
   msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Abort);
   msgBox.setDefaultButton(QMessageBox::Yes);
+  msgBox.setButtonText(QMessageBox::Yes, "Ja");
+  msgBox.setButtonText(QMessageBox::No, "Nein");
+  msgBox.setButtonText(QMessageBox::Abort, "Abbrechen");
+  msgBox.setDefaultButton(QMessageBox::Yes);
+
   int ret = msgBox.exec();
 
   switch (ret) {
@@ -101,14 +109,25 @@ void MainWindow::showFileOpenDialogAddPlayer()
 
 void MainWindow::reDrawSpielerList()
 {
-  if(ui->dockWidgetContentsHeim->layout())
-    delete ui->dockWidgetContentsHeim->layout();
+  auto  widget = this->mMannschaftHeim.displaySpieler();
+  ui->dockWidgetContentsHeim->setChartWidget(widget);
 
-  ui->dockWidgetContentsHeim->setLayout(this->mMannschaftHeim.displaySpieler());
+  widget = this->mMannschaftGegner.displaySpieler();
+  ui->dockWidgetContentsGegner->setChartWidget(widget);
+}
 
+void MainWindow::showHelpMenuDialog()
+{
+  QMessageBox::question(this,
+                           "GPS Tracking Visualisation Hilfe",
+                           "Folgt noch",
+                           QMessageBox::Ok);
+}
 
-  if(ui->dockWidgetContentsGegner->layout())
-    delete ui->dockWidgetContentsGegner->layout();
-
-  ui->dockWidgetContentsGegner->setLayout(this->mMannschaftGegner.displaySpieler());
+void MainWindow::showInformationDialog()
+{
+  QMessageBox::information(this,
+                           "GPS Tracking Visualisation",
+                           "Programmiert für MEDIT im Rahmen eines Seminars im Master Elektrotechnik\nPogrammiert von Kotaro Kurokawa und Carsten Haidl.",
+                           QMessageBox::Ok);
 }

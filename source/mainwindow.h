@@ -21,7 +21,6 @@ public:
 
 private:
   Ui::MainWindow *ui;
-  ChartWidget* mChartWidget;
 
   void createMenusAndActions();
   QStringList showFileOpenDialog();
@@ -34,6 +33,8 @@ public slots:
   void showFileOpenDialogMannschaftGegner();
   void showFileOpenDialogAddPlayer();
   void reDrawSpielerList();
+  void showHelpMenuDialog();
+  void showInformationDialog();
 
 
 };
