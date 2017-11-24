@@ -25,17 +25,17 @@ QString Spieler::getName()
   return this->mSpielername;
 }
 
-float Spieler::getSpeed()
+double Spieler::getSpeed()
 {
   return this->a_speed;
 }
 
-float Spieler::average_speed()
+double Spieler::average_speed()
 {
     double speed_sum = 0;
-    foreach (int timestamp, playerData.keys())
+    foreach (int tstamp, playerData.keys())
     {
-      speed_sum = speed_sum + playerData.value(timestamp).speed;
+      speed_sum = speed_sum + playerData.value(tstamp).speed;
     }
     a_speed = speed_sum / playerData.lastKey();
     return a_speed;
@@ -44,9 +44,9 @@ float Spieler::average_speed()
 float Spieler::average_heartRate()
 {
     float heartrate_sum = 0;
-    foreach (int timestamp, playerData.keys())
+    foreach (int tstamp, playerData.keys())
     {
-      heartrate_sum = heartrate_sum + playerData.value(timestamp).heartRate;
+      heartrate_sum = heartrate_sum + playerData.value(tstamp).heartRate;
     }
 
     a_hrate = heartrate_sum/ playerData.lastKey();

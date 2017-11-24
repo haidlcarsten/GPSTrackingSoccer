@@ -60,6 +60,11 @@ void MainWindow::showFileOpenDialogMannschaftHeim()
 
   this->mMannschaftHeim.neueSpieler(fileNames);
   this->reDrawSpielerList();
+
+  this->mMannschaftHeim.t_average_heartRate();
+  this->mMannschaftHeim.get_Team_HeartRate();
+  this->mMannschaftHeim.t_average_speed();
+  this->mMannschaftHeim.get_Team_Speed();
 }
 
 void MainWindow::showFileOpenDialogMannschaftGegner()

@@ -7,7 +7,8 @@
 
 Mannschaft::Mannschaft(QObject *parent) : QObject(parent)
 {
-
+    this->t_heartrate = 0;
+    this->t_speed = 0;
 }
 
 void Mannschaft::neuerSpieler(QString aPfad)
@@ -27,6 +28,40 @@ void Mannschaft::neueSpieler(QStringList aPfade)
 {
   foreach (auto element, aPfade)
     this->neuerSpieler(element);
+}
+
+float Mannschaft::get_Team_HeartRate()
+{
+  return  this->t_heartrate;
+}
+
+float Mannschaft::t_average_heartRate()
+{
+    double t_heartrate_sum = 0;
+    foreach (Spieler* player, this->mListSpieler)
+    {
+     t_heartrate_sum = t_heartrate_sum + player->getHeartRate();
+    }
+
+    t_heartrate = t_heartrate_sum / mListSpieler.length();
+    return t_heartrate;
+}
+
+double Mannschaft::get_Team_Speed()
+{
+  return   this->t_speed;
+}
+
+double Mannschaft::t_average_speed()
+{
+    double t_speed_sum = 0;
+    foreach (Spieler* player, this->mListSpieler)
+    {
+     t_speed_sum = t_speed_sum + player->getSpeed();
+    }
+
+    t_speed = t_speed_sum / mListSpieler.length();
+    return t_speed;
 }
 
 QLayout* Mannschaft::displaySpieler()

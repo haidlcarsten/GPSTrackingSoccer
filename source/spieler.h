@@ -20,8 +20,8 @@ public:
   void setSliderValues(int aMin, int aMax, int aValue);
   void parseData();
 
-  float getSpeed();
-  float average_speed();  //calculate average_speed of the player
+  double getSpeed();
+  double average_speed();  //calculate average_speed of the player
 
   float getHeartRate();
   float average_heartRate();  //calculate average_heartrate of the player

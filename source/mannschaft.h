@@ -21,6 +21,13 @@ public:
   void setChartWidget(ChartWidget* aWidget) {this->mChartWidget = aWidget;}
   void setSlider(QSlider* aSlider) {this->mSlider = aSlider;}
 
+  double get_Team_Speed();
+  double t_average_speed();  //calculate team_average_speed of the player
+
+  float get_Team_HeartRate();
+  float t_average_heartRate();  //calculate team_average_heartrate of the player
+
+
 signals:
   void playerChanged();
 
@@ -30,6 +37,10 @@ private:
   QList<Spieler*> mListSpieler;
   ChartWidget* mChartWidget;
   QSlider* mSlider;
+
+  double t_speed;
+  float t_heartrate;
+
 };
 
 #endif // MANNSCHAFT_H
