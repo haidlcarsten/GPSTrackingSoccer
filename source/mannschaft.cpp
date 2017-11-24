@@ -79,6 +79,24 @@ void Mannschaft::meanCornePoint()
 
 }
 
+void Mannschaft::synch_point()
+{
+    QTime latestTime(0,0,0);
+    foreach (Spieler* person, mListSpieler)
+    {
+      QTime time = person->getStartTime();
+      if(latestTime < time)
+          latestTime = time;
+    }
+    synchPoint = latestTime;
+
+    foreach (Spieler* person, mListSpieler)
+    {
+     person->calc_synchTime(synchPoint);
+    }
+
+}
+
 double Mannschaft::get_Team_Speed()
 {
   return   this->t_speed;
@@ -106,7 +124,7 @@ QWidget* Mannschaft::displaySpieler()
   foreach (Spieler* person, this->mListSpieler)
   {
     // element, we can react to
-    QCheckBox* cbSelect = new QCheckBox(person->getName(), NULL);
+    QCheckBox* cbSelect = new QCheckBox(person->getFileName(), NULL);
     cbSelect->setChecked(false);
 
     // add the elements to the widget

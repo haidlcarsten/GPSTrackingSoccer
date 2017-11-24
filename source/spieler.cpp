@@ -15,15 +15,31 @@ Spieler::Spieler(QString aPfad)
 { 
   this->mPfad = aPfad;
   QFileInfo info(aPfad);
-  this->mSpielername = info.fileName();
+  this->mFilename = info.fileName();
   this->parseData();
   this->a_speed = 0;
   this->a_hrate = 0;
+
+  QString timestamp;
+
+  for (int i = this->mFilename.length()-1; i > 0; --i)
+  {
+    if(mFilename.at(i) != '.')
+        continue;
+    for (int j = 1;  j <= 6; j++)
+    {
+       timestamp.append(mFilename.at(i-j));
+    }
+    break ;
+  }
+
+  std::reverse(timestamp.begin(),timestamp.end());
+  startTime = QTime::fromString(timestamp,"hhmmss");
 }
 
-QString Spieler::getName()
+QString Spieler::getFileName()
 {
-  return this->mSpielername;
+  return this->mFilename;
 }
 
 double Spieler::getSpeed()
@@ -75,7 +91,7 @@ void Spieler::displayData(bool aDisplay)
     QGridLayout* layout = new QGridLayout(widgetToDisplay);
 
     QLabel* lblName = new QLabel("Name:");
-    QLabel* lblSpielerName = new QLabel(this->getName());
+    QLabel* lblSpielerName = new QLabel(this->getFileName());
     layout->addWidget(lblName, 0, 0);
     layout->addWidget(lblSpielerName, 0, 1);
 
@@ -114,6 +130,27 @@ void Spieler::setSliderValues(int aMin, int aMax, int aValue)
 void Spieler::displayFrameData(int aTime)
 {
 
+}
+
+QTime Spieler::getSynchTime() const
+{
+    return synchTime;
+}
+
+void Spieler::calc_synchTime(QTime aSynchTime)
+{
+    int hour = aSynchTime.hour() - startTime.hour();
+    int min = aSynchTime.minute() - startTime.minute();
+    int sec = aSynchTime.second() - startTime.second();
+
+    timeDiffAsInt = sec + (min*60) + (hour*3600);
+    timeDiff.setHMS(hour,min,sec);
+
+}
+
+QTime Spieler::getStartTime() const
+{
+    return startTime;
 }
 
 QPair<double, double> Spieler::getCornerTopRight() const

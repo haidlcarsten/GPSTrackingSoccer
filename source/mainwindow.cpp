@@ -24,7 +24,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-  delete ui;
+    delete ui;
+}
+
+void MainWindow::initMannschaft(Mannschaft &aMannschaft)
+{
+    aMannschaft.t_average_heartRate();
+    aMannschaft.get_Team_HeartRate();
+    aMannschaft.t_average_speed();
+    aMannschaft.get_Team_Speed();
+    aMannschaft.meanCornePoint();
+    aMannschaft.synch_point();
+
 }
 
 
@@ -64,11 +75,7 @@ void MainWindow::showFileOpenDialogMannschaftHeim()
   this->mMannschaftHeim.neueSpieler(fileNames);
 
 
-  this->mMannschaftHeim.t_average_heartRate();
-  this->mMannschaftHeim.get_Team_HeartRate();
-  this->mMannschaftHeim.t_average_speed();
-  this->mMannschaftHeim.get_Team_Speed();
-  this->mMannschaftHeim.meanCornePoint();
+  this->initMannschaft(mMannschaftHeim);
 
   this->reDrawSpielerList();
 }
@@ -79,11 +86,7 @@ void MainWindow::showFileOpenDialogMannschaftGegner()
 
   this->mMannschaftGegner.neueSpieler(fileNames);
 
-  this->mMannschaftGegner.t_average_heartRate();
-  this->mMannschaftGegner.get_Team_HeartRate();
-  this->mMannschaftGegner.t_average_speed();
-  this->mMannschaftGegner.get_Team_Speed();
-  this->mMannschaftGegner.meanCornePoint();
+  this->initMannschaft(mMannschaftGegner);
 
   this->reDrawSpielerList();
 }

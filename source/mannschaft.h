@@ -30,6 +30,8 @@ public:
 
   void meanCornePoint();
 
+  void synch_point();
+
 signals:
   void playerChanged();
 
@@ -48,6 +50,7 @@ private:
   QPair<double,double> mCornerTopLeft;
   QPair<double,double> mCornerTopRight;
 
+  QTime synchPoint;
 
 };
 

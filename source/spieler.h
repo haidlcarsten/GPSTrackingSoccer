@@ -8,6 +8,7 @@
 #include <QObject>
 #include <QMap>
 #include <QPair>
+#include <QTime>
 
 class Spieler : public QObject
 {
@@ -15,7 +16,7 @@ class Spieler : public QObject
 public:
   Spieler(QString aPfad);
 
-  QString getName();
+  QString getFileName();
   void setChartWidget(ChartWidget* aWidget) {this->mChartWidget = aWidget;}
   void setSlider(QSlider* aSlider);
   void setSliderValues(int aMin, int aMax, int aValue);
@@ -35,6 +36,12 @@ public:
 
   QPair<double, double> getCornerTopRight() const;
 
+  QTime getStartTime() const;
+
+  QTime getSynchTime() const;
+
+  void calc_synchTime(QTime aSynchTime);
+
 signals:
 
 public slots:
@@ -42,7 +49,7 @@ public slots:
   void displayFrameData(int aTime);
 
 private:
-   QString mSpielername;
+   QString mFilename;
    ChartWidget* mChartWidget;
    QSlider* mSlider;
    QString mPfad;
@@ -55,6 +62,12 @@ private:
    QPair<double,double> mCornerTopLeft;
    QPair<double,double> mCornerTopRight;
 
+
+   QTime startTime;
+   QTime synchTime;
+
+   int timeDiffAsInt;
+   QTime timeDiff;
 
 
 };
