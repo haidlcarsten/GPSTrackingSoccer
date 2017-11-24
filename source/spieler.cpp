@@ -8,6 +8,7 @@
 #include <QMap>
 #include <QFileInfo>
 #include <QDebug>
+#include <limits>
 
 
 Spieler::Spieler(QString aPfad)
@@ -115,6 +116,26 @@ void Spieler::displayFrameData(int aTime)
 
 }
 
+QPair<double, double> Spieler::getCornerTopRight() const
+{
+    return mCornerTopRight;
+}
+
+QPair<double, double> Spieler::getCornerTopLeft() const
+{
+    return mCornerTopLeft;
+}
+
+QPair<double, double> Spieler::getCornerBottomRight() const
+{
+    return mCornerBottomRight;
+}
+
+QPair<double, double> Spieler::getCornerBottomLeft() const
+{
+    return mCornerBottomLeft;
+}
+
 
 void Spieler::parseData()
 {
@@ -125,15 +146,23 @@ void Spieler::parseData()
     QTextStream stream(&inputfile);
     QString line;      //erstellt ein string mit allen daten
     bool firstline = true;
+
+    double xValueMax = 0;
+    double yValueMax = 0;
+    double xValueMin = DBL_MAX;
+    double yValueMin = DBL_MAX;
+
     while(!stream.atEnd())
     {
+
+     line = stream.readLine();
      if(firstline)
      {
          firstline = false;
          continue;
      }
 
-     line = stream.readLine();
+
      QStringList elements = line.trimmed().remove(' ').split(',');
 
      parsedData data;
@@ -156,7 +185,32 @@ void Spieler::parseData()
 
 
      playerData.insert(timestamp,data);
+
+     if (data.x_value > xValueMax )
+       xValueMax = data.x_value;
+
+     if (data.x_value < xValueMin )
+       xValueMin = data.x_value;
+
+     if (data.y_value > yValueMax )
+       yValueMax = data.y_value;
+
+     if (data.y_value < yValueMin )
+       yValueMin = data.y_value;
     }
+
+    mCornerBottomLeft.first = xValueMin;
+    mCornerBottomLeft.second = yValueMin;
+
+    mCornerTopRight.first = xValueMax;
+    mCornerTopRight.second = yValueMax;
+
+    mCornerBottomRight.first = xValueMax;
+    mCornerBottomRight.second = yValueMin;
+
+    mCornerTopLeft.first = xValueMin;
+    mCornerTopLeft.second = yValueMax;
+
 
     // a debug output
 //    foreach (int timestamp, playerData.keys())

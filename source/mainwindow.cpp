@@ -62,12 +62,15 @@ void MainWindow::showFileOpenDialogMannschaftHeim()
   QStringList fileNames = this->showFileOpenDialog();
 
   this->mMannschaftHeim.neueSpieler(fileNames);
-  this->reDrawSpielerList();
+
 
   this->mMannschaftHeim.t_average_heartRate();
   this->mMannschaftHeim.get_Team_HeartRate();
   this->mMannschaftHeim.t_average_speed();
   this->mMannschaftHeim.get_Team_Speed();
+  this->mMannschaftHeim.meanCornePoint();
+
+  this->reDrawSpielerList();
 }
 
 void MainWindow::showFileOpenDialogMannschaftGegner()
@@ -75,6 +78,13 @@ void MainWindow::showFileOpenDialogMannschaftGegner()
   QStringList fileNames = this->showFileOpenDialog();
 
   this->mMannschaftGegner.neueSpieler(fileNames);
+
+  this->mMannschaftGegner.t_average_heartRate();
+  this->mMannschaftGegner.get_Team_HeartRate();
+  this->mMannschaftGegner.t_average_speed();
+  this->mMannschaftGegner.get_Team_Speed();
+  this->mMannschaftGegner.meanCornePoint();
+
   this->reDrawSpielerList();
 }
 

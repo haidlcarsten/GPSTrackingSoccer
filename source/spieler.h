@@ -7,6 +7,7 @@
 #include"typedef.h"
 #include <QObject>
 #include <QMap>
+#include <QPair>
 
 class Spieler : public QObject
 {
@@ -26,6 +27,14 @@ public:
   float getHeartRate();
   float average_heartRate();  //calculate average_heartrate of the player
 
+  QPair<double, double> getCornerBottomLeft() const;
+
+  QPair<double, double> getCornerBottomRight() const;
+
+  QPair<double, double> getCornerTopLeft() const;
+
+  QPair<double, double> getCornerTopRight() const;
+
 signals:
 
 public slots:
@@ -40,6 +49,12 @@ private:
    QMap<int,parsedData> playerData;
    double a_speed; //average speed
    float a_hrate; //average heartrate
+
+   QPair<double,double> mCornerBottomLeft;
+   QPair<double,double> mCornerBottomRight;
+   QPair<double,double> mCornerTopLeft;
+   QPair<double,double> mCornerTopRight;
+
 
 
 };

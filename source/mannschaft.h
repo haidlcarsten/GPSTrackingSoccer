@@ -4,6 +4,7 @@
 #include <QObject>
 #include "spieler.h"
 #include "chartwidget.h"
+#include <QPair>
 
 class QLayout;
 
@@ -27,6 +28,7 @@ public:
   float get_Team_HeartRate();
   float t_average_heartRate();  //calculate team_average_heartrate of the player
 
+  void meanCornePoint();
 
 signals:
   void playerChanged();
@@ -40,6 +42,12 @@ private:
 
   double t_speed;
   float t_heartrate;
+
+  QPair<double,double> mCornerBottomLeft;
+  QPair<double,double> mCornerBottomRight;
+  QPair<double,double> mCornerTopLeft;
+  QPair<double,double> mCornerTopRight;
+
 
 };
 

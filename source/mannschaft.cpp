@@ -43,8 +43,40 @@ float Mannschaft::t_average_heartRate()
      t_heartrate_sum = t_heartrate_sum + player->getHeartRate();
     }
 
-    t_heartrate = t_heartrate_sum / mListSpieler.length();
+    t_heartrate = t_heartrate_sum / mListSpieler.count();
     return t_heartrate;
+}
+
+void Mannschaft::meanCornePoint()
+{
+    double xMax = 0.0;
+    double xMin = 0.0;
+    double yMax = 0.0;
+    double yMin = 0.0;
+    foreach (Spieler* person, mListSpieler)
+    {
+      xMin += person->getCornerBottomLeft().first;
+      yMin += person->getCornerBottomLeft().second;
+      xMax += person->getCornerTopRight().first;
+      yMax += person->getCornerTopRight().second;
+    }
+    xMin /=(double) mListSpieler.count();
+    yMin /=(double) mListSpieler.count();
+    xMax /=(double) mListSpieler.count();
+    yMax /=(double) mListSpieler.count();
+
+    mCornerBottomLeft.first = xMin;
+    mCornerBottomLeft.second = yMin;
+
+    mCornerTopRight.first = xMax;
+    mCornerTopRight.second = yMax;
+
+    mCornerBottomRight.first = xMax;
+    mCornerBottomRight.second = yMin;
+
+    mCornerTopLeft.first = xMin;
+    mCornerTopLeft.second = yMax;
+
 }
 
 double Mannschaft::get_Team_Speed()
@@ -60,7 +92,7 @@ double Mannschaft::t_average_speed()
      t_speed_sum = t_speed_sum + player->getSpeed();
     }
 
-    t_speed = t_speed_sum / mListSpieler.length();
+    t_speed = t_speed_sum / mListSpieler.count();
     return t_speed;
 }
 
