@@ -1,8 +1,10 @@
 #include "mainwindow.h"
 
+#include <QDebug>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QDebug>
+#include <QSettings>
+#include "settingsdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -20,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
   connect(&mMannschaftHeim, &Mannschaft::playerChanged, this, &MainWindow::reDrawSpielerList);
   connect(&mMannschaftGegner, &Mannschaft::playerChanged, this, &MainWindow::reDrawSpielerList);
+
+  loadSettings();
 }
 
 MainWindow::~MainWindow()
@@ -27,26 +31,16 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::initMannschaft(Mannschaft &aMannschaft)
-{
-    aMannschaft.t_average_heartRate();
-    aMannschaft.get_Team_HeartRate();
-    aMannschaft.t_average_speed();
-    aMannschaft.get_Team_Speed();
-    aMannschaft.meanCornePoint();
-    aMannschaft.synch_point();
-
-}
-
-
 void MainWindow::createMenusAndActions()
 {
   // File menu
   QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
-  fileMenu->addAction("&Heim-Mannschaft laden...", this, SLOT(showFileOpenDialogMannschaftHeim()));
-  fileMenu->addAction("&Gegner-Mannschaft laden...", this, SLOT(showFileOpenDialogMannschaftGegner()));
+  fileMenu->addAction("&Heim-Mannschaft laden...", this, &MainWindow::showFileOpenDialogMannschaftHeim);
+  fileMenu->addAction("&Gegner-Mannschaft laden...", this, &MainWindow::showFileOpenDialogMannschaftGegner);
   fileMenu->addSeparator();
-  fileMenu->addAction("&Spieler laden...", this, SLOT(showFileOpenDialogAddPlayer()));
+  fileMenu->addAction("&Spieler laden...", this, &MainWindow::showFileOpenDialogAddPlayer);
+  fileMenu->addSeparator();
+  fileMenu->addAction("Einstellungen", this, &MainWindow::showSettingsDialog);
   fileMenu->addSeparator();
   fileMenu->addAction("Exit", this, SLOT(close()));
 
@@ -143,4 +137,36 @@ void MainWindow::showInformationDialog()
                            "GPS Tracking Visualisation",
                            "Programmiert für MEDIT im Rahmen eines Seminars im Master Elektrotechnik\nPogrammiert von Kotaro Kurokawa und Carsten Haidl.",
                            QMessageBox::Ok);
+}
+
+void MainWindow::initMannschaft(Mannschaft &aMannschaft)
+{
+  aMannschaft.calcAverageHeartrate();
+  aMannschaft.getTeamAverageHeartrate();
+  aMannschaft.calcAverageSpeed();
+  aMannschaft.getTeamAverageSpeed();
+  aMannschaft.calcMeanCornePoint();
+  aMannschaft.calcSynchPoint();
+}
+
+void MainWindow::showSettingsDialog()
+{
+  SettingsDialog dlg;
+  dlg.exec();
+}
+
+void MainWindow::loadSettings()
+{
+  QSettings settings(":/config.cfg", QSettings::NativeFormat);
+
+  if(! settings.value(SETTINGS_COORDINATES_EXISTS, false).toBool())
+  {
+    QMessageBox::information(this,
+                             "GPS Tracking Visualisation",
+                             "Es sind keine Koordinaten in den Einstellungen eingetragen.\nBitte tragen Sie welche ein, bevor das System genutzt werden kann.",
+                             QMessageBox::Ok);
+
+    this->showSettingsDialog();;
+  }
+
 }

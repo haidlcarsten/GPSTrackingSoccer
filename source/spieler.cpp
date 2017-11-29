@@ -17,11 +17,8 @@ Spieler::Spieler(QString aPfad)
   QFileInfo info(aPfad);
   this->mFilename = info.fileName();
   this->parseData();
-  this->a_speed = 0;
-  this->a_hrate = 0;
 
   QString timestamp;
-
   for (int i = this->mFilename.length()-1; i > 0; --i)
   {
     if(mFilename.at(i) != '.')
@@ -34,45 +31,45 @@ Spieler::Spieler(QString aPfad)
   }
 
   std::reverse(timestamp.begin(),timestamp.end());
-  startTime = QTime::fromString(timestamp,"hhmmss");
+  mStartTime = QTime::fromString(timestamp,"hhmmss");
 }
 
-QString Spieler::getFileName()
+QString Spieler::getFileName() const
 {
   return this->mFilename;
 }
 
 double Spieler::getSpeed()
 {
-  return this->a_speed;
+  return this->mAvgSpeed;
 }
 
-double Spieler::average_speed()
+double Spieler::calcAverageSpeed()
 {
     double speed_sum = 0;
-    foreach (int tstamp, playerData.keys())
+    foreach (int tstamp, mAllPlayerData.keys())
     {
-      speed_sum = speed_sum + playerData.value(tstamp).speed;
+      speed_sum = speed_sum + mAllPlayerData.value(tstamp).mSpeed;
     }
-    a_speed = speed_sum / playerData.lastKey();
-    return a_speed;
+    mAvgSpeed = speed_sum / mAllPlayerData.lastKey();
+    return mAvgSpeed;
 }
 
-float Spieler::average_heartRate()
+float Spieler::calcAverageHeartRate()
 {
     float heartrate_sum = 0;
-    foreach (int tstamp, playerData.keys())
+    foreach (int tstamp, mAllPlayerData.keys())
     {
-      heartrate_sum = heartrate_sum + playerData.value(tstamp).heartRate;
+      heartrate_sum = heartrate_sum + mAllPlayerData.value(tstamp).mHeartRate;
     }
 
-    a_hrate = heartrate_sum/ playerData.lastKey();
-    return a_hrate;
+    mAvgHeartRate = heartrate_sum/ mAllPlayerData.lastKey();
+    return mAvgHeartRate;
 }
 
 float Spieler::getHeartRate()
 {
-  return this->a_hrate;
+  return this->mAvgHeartRate;
 }
 
 
@@ -88,7 +85,9 @@ void Spieler::displayData(bool aDisplay)
   if(aDisplay)
   {
     widgetToDisplay = new QWidget;
-    QGridLayout* layout = new QGridLayout(widgetToDisplay);
+    QVBoxLayout* basicLayout = new QVBoxLayout;
+
+    QGridLayout* layout = new QGridLayout();
 
     QLabel* lblName = new QLabel("Name:");
     QLabel* lblSpielerName = new QLabel(this->getFileName());
@@ -105,7 +104,12 @@ void Spieler::displayData(bool aDisplay)
     layout->addWidget(lblHeartRateAvg, 2, 0);
     layout->addWidget(lblSpielerHeartRateAvg, 2, 1);
 
-    this->setSliderValues(this->playerData.firstKey(), this->playerData.lastKey(), 0);
+    basicLayout->addLayout(layout);
+    basicLayout->setAlignment(layout, Qt::AlignTop);
+
+    widgetToDisplay->setLayout(basicLayout);
+
+    this->setSliderValues(this->mAllPlayerData.firstKey(), this->mAllPlayerData.lastKey(), 0);
   }
   else
   {
@@ -137,20 +141,20 @@ QTime Spieler::getSynchTime() const
     return synchTime;
 }
 
-void Spieler::calc_synchTime(QTime aSynchTime)
+void Spieler::calcSynchTime(QTime aSynchTime)
 {
-    int hour = aSynchTime.hour() - startTime.hour();
-    int min = aSynchTime.minute() - startTime.minute();
-    int sec = aSynchTime.second() - startTime.second();
+    int hour = aSynchTime.hour() - mStartTime.hour();
+    int min = aSynchTime.minute() - mStartTime.minute();
+    int sec = aSynchTime.second() - mStartTime.second();
 
-    timeDiffAsInt = sec + (min*60) + (hour*3600);
-    timeDiff.setHMS(hour,min,sec);
+    mTimeDiffStartSynchAsInt = sec + (min*60) + (hour*3600);
+    mTimeDiffStartSynch.setHMS(hour,min,sec);
 
 }
 
 QTime Spieler::getStartTime() const
 {
-    return startTime;
+    return mStartTime;
 }
 
 QPair<double, double> Spieler::getCornerTopRight() const
@@ -204,36 +208,36 @@ void Spieler::parseData()
 
      parsedData data;
      int timestamp = elements[0].toInt();
-     data.activityType = elements[1].toInt();
+     data.mActivityType = elements[1].toInt();
 
      // check if we reach the end
-     if(data.activityType == -1)
+     if(data.mActivityType == -1)
          break;
 
-     data.lapNumber = elements[2].toInt();
-     data.distance = elements[3].toDouble();
-     data.speed = elements[4].toDouble();
-     data.calories = elements[5].toDouble();
-     data.x_value = elements[6].toDouble();
-     data.y_value = elements[7].toDouble();
-     data.elevation = elements[8].toDouble();
-     data.heartRate = elements[9].toInt();
-     data.cycles = elements[10].toInt();
+     data.mLapNumber = elements[2].toInt();
+     data.mDistance = elements[3].toDouble();
+     data.mSpeed = elements[4].toDouble();
+     data.mCalories = elements[5].toDouble();
+     data.mXvalue = elements[6].toDouble();
+     data.mYvalue = elements[7].toDouble();
+     data.mElevation = elements[8].toDouble();
+     data.mHeartRate = elements[9].toInt();
+     data.mCycles = elements[10].toInt();
 
 
-     playerData.insert(timestamp,data);
+     mAllPlayerData.insert(timestamp,data);
 
-     if (data.x_value > xValueMax )
-       xValueMax = data.x_value;
+     if (data.mXvalue > xValueMax )
+       xValueMax = data.mXvalue;
 
-     if (data.x_value < xValueMin )
-       xValueMin = data.x_value;
+     if (data.mXvalue < xValueMin )
+       xValueMin = data.mXvalue;
 
-     if (data.y_value > yValueMax )
-       yValueMax = data.y_value;
+     if (data.mYvalue > yValueMax )
+       yValueMax = data.mYvalue;
 
-     if (data.y_value < yValueMin )
-       yValueMin = data.y_value;
+     if (data.mYvalue < yValueMin )
+       yValueMin = data.mYvalue;
     }
 
     mCornerBottomLeft.first = xValueMin;

@@ -7,8 +7,8 @@
 
 Mannschaft::Mannschaft(QObject *parent) : QObject(parent)
 {
-    this->t_heartrate = 0;
-    this->t_speed = 0;
+    this->mAvgHeartrate = 0;
+    this->mAvgSpeed = 0;
 }
 
 void Mannschaft::neuerSpieler(QString aPfad)
@@ -16,10 +16,8 @@ void Mannschaft::neuerSpieler(QString aPfad)
   Spieler* person = new Spieler(aPfad);
   person->setChartWidget(this->mChartWidget);
   person->setSlider(this->mSlider);
-  person->average_speed();
-  person->getSpeed();
-  person->average_heartRate();
-  person->getHeartRate();
+  person->calcAverageSpeed();
+  person->calcAverageHeartRate();
 
   this->mListSpieler.append(person);
 }
@@ -30,12 +28,12 @@ void Mannschaft::neueSpieler(QStringList aPfade)
     this->neuerSpieler(element);
 }
 
-float Mannschaft::get_Team_HeartRate()
+float Mannschaft::getTeamAverageHeartrate()
 {
-  return  this->t_heartrate;
+  return  this->mAvgHeartrate;
 }
 
-float Mannschaft::t_average_heartRate()
+float Mannschaft::calcAverageHeartrate()
 {
     double t_heartrate_sum = 0;
     foreach (Spieler* player, this->mListSpieler)
@@ -43,11 +41,11 @@ float Mannschaft::t_average_heartRate()
      t_heartrate_sum = t_heartrate_sum + player->getHeartRate();
     }
 
-    t_heartrate = t_heartrate_sum / mListSpieler.count();
-    return t_heartrate;
+    mAvgHeartrate = t_heartrate_sum / mListSpieler.count();
+    return mAvgHeartrate;
 }
 
-void Mannschaft::meanCornePoint()
+void Mannschaft::calcMeanCornePoint()
 {
     double xMax = 0.0;
     double xMin = 0.0;
@@ -79,7 +77,7 @@ void Mannschaft::meanCornePoint()
 
 }
 
-void Mannschaft::synch_point()
+void Mannschaft::calcSynchPoint()
 {
     QTime latestTime(0,0,0);
     foreach (Spieler* person, mListSpieler)
@@ -88,21 +86,21 @@ void Mannschaft::synch_point()
       if(latestTime < time)
           latestTime = time;
     }
-    synchPoint = latestTime;
+    mSynchPoint = latestTime;
 
     foreach (Spieler* person, mListSpieler)
     {
-     person->calc_synchTime(synchPoint);
+     person->calcSynchTime(mSynchPoint);
     }
 
 }
 
-double Mannschaft::get_Team_Speed()
+double Mannschaft::getTeamAverageSpeed()
 {
-  return   this->t_speed;
+  return this->mAvgSpeed;
 }
 
-double Mannschaft::t_average_speed()
+double Mannschaft::calcAverageSpeed()
 {
     double t_speed_sum = 0;
     foreach (Spieler* player, this->mListSpieler)
@@ -110,8 +108,8 @@ double Mannschaft::t_average_speed()
      t_speed_sum = t_speed_sum + player->getSpeed();
     }
 
-    t_speed = t_speed_sum / mListSpieler.count();
-    return t_speed;
+    mAvgSpeed = t_speed_sum / mListSpieler.count();
+    return mAvgSpeed;
 }
 
 QWidget* Mannschaft::displaySpieler()

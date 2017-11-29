@@ -27,21 +27,27 @@ SOURCES +=  source/main.cpp\
             source/mainwindow.cpp \
             source/mannschaft.cpp \
             source/spieler.cpp \
-            source/chartwidget.cpp
+            source/chartwidget.cpp \
+            source/settingsdialog.cpp
 
 
 HEADERS  += source/mainwindow.h \
             source/mannschaft.h \
             source/spieler.h \
             source/typedef.h \
-            source/chartwidget.h
+            source/chartwidget.h \
+            source/settingsdialog.h \
+            source/consts.h
 
 FORMS    += ui/mainwindow.ui\
-            ui/chartwidget.ui
+            ui/chartwidget.ui \
+            ui/settingsdialog.ui
 
 INCLUDEPATH += \
     source
 
+OTHER_FILES += \
+    data\
 
 linux {
     CONFIG(debug, debug|release) {
