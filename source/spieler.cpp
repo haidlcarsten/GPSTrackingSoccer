@@ -1,4 +1,5 @@
 #include "spieler.h"
+#include "consts.h"
 #include <QLabel>
 #include <QFormLayout>
 #include <QString>
@@ -16,6 +17,8 @@ Spieler::Spieler(QString aPfad)
   this->mPfad = aPfad;
   QFileInfo info(aPfad);
   this->mFilename = info.fileName();
+  this->mSpielerName = this->mFilename;
+
   this->parseData();
 
   QString timestamp;
@@ -37,6 +40,11 @@ Spieler::Spieler(QString aPfad)
 QString Spieler::getFileName() const
 {
   return this->mFilename;
+}
+
+QString Spieler::getPlayerName() const
+{
+  return this->mSpielerName;
 }
 
 double Spieler::getSpeed()
@@ -89,17 +97,17 @@ void Spieler::displayData(bool aDisplay)
 
     QGridLayout* layout = new QGridLayout();
 
-    QLabel* lblName = new QLabel("Name:");
+    QLabel* lblName = new QLabel(PLAYER_NAME);
     QLabel* lblSpielerName = new QLabel(this->getFileName());
     layout->addWidget(lblName, 0, 0);
     layout->addWidget(lblSpielerName, 0, 1);
 
-    QLabel* lblSpeedAvg = new QLabel("Durchschnittliche Geschwindigkeit:");
+    QLabel* lblSpeedAvg = new QLabel(PLAYER_AVERAGE_SPEED);
     QLabel* lblSpielerSpeedAvg = new QLabel(QString::number(this->getSpeed()));
     layout->addWidget(lblSpeedAvg, 1, 0);
     layout->addWidget(lblSpielerSpeedAvg, 1, 1);
 
-    QLabel* lblHeartRateAvg = new QLabel("Durchschnittliche Herzrate:");
+    QLabel* lblHeartRateAvg = new QLabel(PLAYER_AVERAGE_HEARTRATE);
     QLabel* lblSpielerHeartRateAvg = new QLabel(QString::number(this->getHeartRate()));
     layout->addWidget(lblHeartRateAvg, 2, 0);
     layout->addWidget(lblSpielerHeartRateAvg, 2, 1);

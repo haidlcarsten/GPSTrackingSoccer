@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "consts.h"
 
 #include <QDebug>
 #include <QFileDialog>
@@ -11,6 +12,10 @@ MainWindow::MainWindow(QWidget *parent) :
   ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
+
+  // setting the label-text
+  ui->dockWidgetHeim->setWindowTitle(MW_TEAM_HOME_DOCK);
+  ui->dockWidgetGegner->setWindowTitle(MW_TEAM_ENEMY_DOCK);
 
   this->mMannschaftHeim.setChartWidget(ui->widget);
   this->mMannschaftHeim.setSlider(ui->horizontalSlider);
@@ -34,20 +39,20 @@ MainWindow::~MainWindow()
 void MainWindow::createMenusAndActions()
 {
   // File menu
-  QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
-  fileMenu->addAction("&Heim-Mannschaft laden...", this, &MainWindow::showFileOpenDialogMannschaftHeim);
-  fileMenu->addAction("&Gegner-Mannschaft laden...", this, &MainWindow::showFileOpenDialogMannschaftGegner);
+  QMenu* fileMenu = menuBar()->addMenu(MW_FILE_MENU);
+  fileMenu->addAction(MW_FILE_MENU_LOAD_TEAM_HOME, this, &MainWindow::showFileOpenDialogMannschaftHeim);
+  fileMenu->addAction(MW_FILE_MENU_LOAD_TEAM_ENEMY, this, &MainWindow::showFileOpenDialogMannschaftGegner);
   fileMenu->addSeparator();
-  fileMenu->addAction("&Spieler laden...", this, &MainWindow::showFileOpenDialogAddPlayer);
+  fileMenu->addAction(MW_FILE_MENU_LOAD_PLAYER, this, &MainWindow::showFileOpenDialogAddPlayer);
   fileMenu->addSeparator();
-  fileMenu->addAction("Einstellungen", this, &MainWindow::showSettingsDialog);
+  fileMenu->addAction(MW_FILE_MENU_LOAD_SETTINGS, this, &MainWindow::showSettingsDialog);
   fileMenu->addSeparator();
-  fileMenu->addAction("Exit", this, SLOT(close()));
+  fileMenu->addAction(MW_FILE_MENU_EXIT, this, SLOT(close()));
 
-  QMenu* helpMenu = menuBar()->addMenu(tr("&Hilfe"));
-  helpMenu->addAction("Hilfe...", this, &MainWindow::showHelpMenuDialog);
+  QMenu* helpMenu = menuBar()->addMenu(MW_HELP_MENU);
+  helpMenu->addAction(MW_HELP_MENU_HELP, this, &MainWindow::showHelpMenuDialog);
   helpMenu->addSeparator();
-  helpMenu->addAction("Information", this, &MainWindow::showInformationDialog);
+  helpMenu->addAction(MW_HELP_MENU_INFORMATION, this, &MainWindow::showInformationDialog);
 }
 
 QStringList MainWindow::showFileOpenDialog()
@@ -88,13 +93,13 @@ void MainWindow::showFileOpenDialogMannschaftGegner()
 void MainWindow::showFileOpenDialogAddPlayer()
 {
   QMessageBox msgBox;
-  msgBox.setText("Sollen der Heim-Mannschaft Spieler hinzugefügt werden?");
-  msgBox.setInformativeText("Bei Wahl von \"Ja\" werden der Heim-Mannschaft Spieler hinzugefügt, bei der Wahl von \"Nein\" werden der Gegner-Mannschaft Spieler hinzugefügt.");
+  msgBox.setText(MW_LOAD_PLAYER_QUESTION);
+  msgBox.setInformativeText(MW_LOAD_PLAYER_QUESTION_INFORMATION);
   msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Abort);
   msgBox.setDefaultButton(QMessageBox::Yes);
-  msgBox.setButtonText(QMessageBox::Yes, "Ja");
-  msgBox.setButtonText(QMessageBox::No, "Nein");
-  msgBox.setButtonText(QMessageBox::Abort, "Abbrechen");
+  msgBox.setButtonText(QMessageBox::Yes, BUTTON_TEXT_YES);
+  msgBox.setButtonText(QMessageBox::No, BUTTON_TEXT_NO);
+  msgBox.setButtonText(QMessageBox::Abort, BUTTON_TEXT_Abort);
   msgBox.setDefaultButton(QMessageBox::Yes);
 
   int ret = msgBox.exec();
@@ -126,16 +131,16 @@ void MainWindow::reDrawSpielerList()
 void MainWindow::showHelpMenuDialog()
 {
   QMessageBox::question(this,
-                           "GPS Tracking Visualisation Hilfe",
-                           "Folgt noch",
+                           APPLICATION_NAME_HELP,
+                           MW_HELP_TEXT,
                            QMessageBox::Ok);
 }
 
 void MainWindow::showInformationDialog()
 {
   QMessageBox::information(this,
-                           "GPS Tracking Visualisation",
-                           "Programmiert für MEDIT im Rahmen eines Seminars im Master Elektrotechnik\nPogrammiert von Kotaro Kurokawa und Carsten Haidl.",
+                           APPLICATION_NAME,
+                           MW_ABOUT_TEXT,
                            QMessageBox::Ok);
 }
 
@@ -157,16 +162,19 @@ void MainWindow::showSettingsDialog()
 
 void MainWindow::loadSettings()
 {
-  QSettings settings(":/config.cfg", QSettings::NativeFormat);
+#ifdef Q_OS_LINUX
+  QSettings settings("." + QApplication::applicationDirPath().left(1) + SETTINGS_FILE_PATH, QSettings::IniFormat);
+#elif Q_OS_WIN
+  QSettings settings(QApplication::applicationDirPath().left(1) + SETTINGS_FILE_PATH, QSettings::IniFormat);
+#endif
 
-  if(! settings.value(SETTINGS_COORDINATES_EXISTS, false).toBool())
+  while(!settings.value(SETTINGS_COORDINATES_EXISTS, false).toBool())
   {
     QMessageBox::information(this,
-                             "GPS Tracking Visualisation",
-                             "Es sind keine Koordinaten in den Einstellungen eingetragen.\nBitte tragen Sie welche ein, bevor das System genutzt werden kann.",
+                             APPLICATION_NAME,
+                             MW_NO_SETTINGS,
                              QMessageBox::Ok);
 
-    this->showSettingsDialog();;
+    this->showSettingsDialog();
   }
-
 }

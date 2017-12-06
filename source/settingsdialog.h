@@ -32,6 +32,20 @@ public:
    */
   ~SettingsDialog();
 
+private slots:
+
+  /**
+   * @brief accept
+   * define what happens if the "ok"-button is pressed
+   */
+  void accept() Q_DECL_OVERRIDE;
+
+  /**
+   * @brief reject
+   * define what happens if the "cancel"-button is pressed
+   */
+  void reject() Q_DECL_OVERRIDE;
+
 private:
   Ui::SettingsDialog *ui;
 };

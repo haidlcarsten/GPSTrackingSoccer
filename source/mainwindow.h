@@ -35,7 +35,7 @@ public:
    */
   ~MainWindow();
 
-public slots:
+private slots:
   /**
    * @brief showFileOpenDialogMannschaftHeim
    * creates a file-open-dialog to add player to the heim-mannschaft

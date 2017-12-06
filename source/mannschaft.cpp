@@ -1,6 +1,8 @@
 #include "mannschaft.h"
+#include "consts.h"
 #include <QCheckBox>
 #include <QFormLayout>
+#include <QGroupBox>
 #include <QPushButton>
 #include <QLabel>
 #include <QDebug>
@@ -79,19 +81,19 @@ void Mannschaft::calcMeanCornePoint()
 
 void Mannschaft::calcSynchPoint()
 {
-    QTime latestTime(0,0,0);
-    foreach (Spieler* person, mListSpieler)
-    {
-      QTime time = person->getStartTime();
-      if(latestTime < time)
-          latestTime = time;
-    }
-    mSynchPoint = latestTime;
+  QTime latestTime(0,0,0);
+  foreach (Spieler* person, mListSpieler)
+  {
+    QTime time = person->getStartTime();
+    if(latestTime < time)
+        latestTime = time;
+  }
+  mSynchPoint = latestTime;
 
-    foreach (Spieler* person, mListSpieler)
-    {
-     person->calcSynchTime(mSynchPoint);
-    }
+  foreach (Spieler* person, mListSpieler)
+  {
+    person->calcSynchTime(mSynchPoint);
+  }
 
 }
 
@@ -105,7 +107,7 @@ double Mannschaft::calcAverageSpeed()
     double t_speed_sum = 0;
     foreach (Spieler* player, this->mListSpieler)
     {
-     t_speed_sum = t_speed_sum + player->getSpeed();
+      t_speed_sum = t_speed_sum + player->getSpeed();
     }
 
     mAvgSpeed = t_speed_sum / mListSpieler.count();
@@ -122,13 +124,30 @@ QWidget* Mannschaft::displaySpieler()
   foreach (Spieler* person, this->mListSpieler)
   {
     // element, we can react to
-    QCheckBox* cbSelect = new QCheckBox(person->getFileName(), NULL);
+    QCheckBox* cbSelect = new QCheckBox(person->getPlayerName(), NULL);
+    cbSelect->setToolTip(TEAM_PLAYER_INDIVIDUAL_TOOLTIP + person->getPlayerName());
     cbSelect->setChecked(false);
 
     // add the elements to the widget
     resultLayout->addRow(cbSelect);
 
     connect(cbSelect, &QCheckBox::clicked, person, &Spieler::displayData);
+  }
+
+  if(this->mListSpieler.count() > 0)
+  {
+    QGridLayout* gridLayout = new QGridLayout;
+
+    gridLayout->addWidget(new QLabel(TEAM_SPEED), 0, 0);
+    gridLayout->addWidget(new QLabel(QString::number(this->getTeamAverageSpeed())), 0, 1);
+
+    gridLayout->addWidget(new QLabel(TEAM_HEARTRATE), 1, 0);
+    gridLayout->addWidget(new QLabel(QString::number(this->getTeamAverageHeartrate())), 1, 1);
+
+    QGroupBox* grbMannschaftData = new QGroupBox(TEAM_GRB_DATA);
+    grbMannschaftData->setLayout(gridLayout);
+
+    resultLayout->addRow(grbMannschaftData);
   }
 
   widget->setLayout(resultLayout);

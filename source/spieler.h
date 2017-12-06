@@ -56,6 +56,15 @@ public:
   QString getFileName() const;
 
   /**
+   * @brief getPlayerName
+   * getter for player-name
+   *
+   * @return
+   * playername
+   */
+  QString getPlayerName() const;
+
+  /**
    * @brief getSpeed
    * getter for the average speed of the player
    *
@@ -185,6 +194,7 @@ private:
   //---------- member-variable ----------
    QString mPfad;
    QString mFilename;
+   QString mSpielerName;
    ChartWidget* mChartWidget;
    QSlider* mSlider;
    QMap<int,parsedData> mAllPlayerData;
