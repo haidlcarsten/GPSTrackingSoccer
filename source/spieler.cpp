@@ -15,26 +15,37 @@
 Spieler::Spieler(QString aPfad)
 { 
   this->mPfad = aPfad;
+
+  // getting the filename
   QFileInfo info(aPfad);
   this->mFilename = info.fileName();
+
+  // at the beginnen playername is equal  to filename
   this->mSpielerName = this->mFilename;
 
+  // parse all data
   this->parseData();
 
+  // getting the timestamp from filename
+  // the filename should have the structure "name-yyyymmddThhmmss.csv"
   QString timestamp;
   for (int i = this->mFilename.length()-1; i > 0; --i)
   {
-    if(mFilename.at(i) != '.')
+    if(this->mFilename.at(i) != '.')
         continue;
     for (int j = 1;  j <= 6; j++)
     {
-       timestamp.append(mFilename.at(i-j));
+       timestamp.append(this->mFilename.at(i-j));
     }
     break ;
   }
 
   std::reverse(timestamp.begin(),timestamp.end());
-  mStartTime = QTime::fromString(timestamp,"hhmmss");
+  this->mStartTime = QTime::fromString(timestamp,"hhmmss");
+
+  // at the begin the timediff is zero
+  this->mTimeDiffStartSynchAsInt = 0;
+  this->mTimeDiffStartSynch = QTime(0, 0, 0);
 }
 
 QString Spieler::getFileName() const
@@ -89,7 +100,10 @@ void Spieler::setSlider(QSlider *aSlider)
 
 void Spieler::displayData(bool aDisplay)
 {
-  QWidget* widgetToDisplay;
+  // creates an widget to show the information to an player
+  QWidget* widgetToDisplay; // just a holder
+
+  // if we should display the player or not
   if(aDisplay)
   {
     widgetToDisplay = new QWidget;
@@ -130,59 +144,112 @@ void Spieler::displayData(bool aDisplay)
 
 void Spieler::setSliderValues(int aMin, int aMax, int aValue)
 {
-  if(aValue )
   this->mSlider->setMinimum(aMin);
   this->mSlider->setMaximum(aMax);
   this->blockSignals(true);
   this->mSlider->setValue(aValue);
   this->blockSignals(false);
+}
 
+void Spieler::synchPlayerData()
+{
+  // if timediff is zero, we dont have to synch
+  if(this->mTimeDiffStartSynchAsInt == 0)
+  {
+    // same data, because no time-shift
+    this->mSynchPlayerData = this->mAllPlayerData;
+    return;
+  }
+
+  int amountKeys = this->mAllPlayerData.keys().count();
+
+  for(int i = 0; i < amountKeys; i++)
+  {
+    // in this case, we dont need to check the key, because the key is just a number
+
+    int pos = i + this->mTimeDiffStartSynchAsInt;
+    parsedData data;
+    if(pos <= amountKeys)
+      data = this->mAllPlayerData.value(pos);
+
+    // in case we have no mor data but we need more, we have to insert dummy-data
+    if(pos > amountKeys)
+    {
+      data.mActivityType = -1; // mark as invalid
+      data.mLapNumber  = 0;
+      data.mDistance   = 0.0;
+      data.mSpeed      = 0.0;
+      data.mCalories   = 0.0;
+      data.mXvalue     = 0.0;
+      data.mYvalue     = 0.0;
+      data.mElevation  = 0.0;
+      data.mHeartRate  = 0;
+      data.mCycles     = 0;
+   }
+
+    this->mSynchPlayerData.insert(i, data);
+  }
 }
 
 void Spieler::displayFrameData(int aTime)
 {
+  Q_UNUSED(aTime)
 
+}
+
+void Spieler::setPlayerName(QString aText)
+{
+  this->mSpielerName = aText;
+  qDebug() << this->mSpielerName;
 }
 
 QTime Spieler::getSynchTime() const
 {
-    return synchTime;
+    return this->mSynchTime;
 }
 
 void Spieler::calcSynchTime(QTime aSynchTime)
 {
-    int hour = aSynchTime.hour() - mStartTime.hour();
-    int min = aSynchTime.minute() - mStartTime.minute();
-    int sec = aSynchTime.second() - mStartTime.second();
 
-    mTimeDiffStartSynchAsInt = sec + (min*60) + (hour*3600);
-    mTimeDiffStartSynch.setHMS(hour,min,sec);
+  // calculate the difference between the given time to our starttime, the given time should alway be later or same
+  int hour = aSynchTime.hour() - this->mStartTime.hour();
+  int min = aSynchTime.minute() - this->mStartTime.minute();
+  int sec = aSynchTime.second() - this->mStartTime.second();
 
+  this->mTimeDiffStartSynchAsInt = sec + (min*60) + (hour*3600);
+  this->mTimeDiffStartSynch.setHMS(hour,min,sec);
+
+  // synch the playerdata
+  this->synchPlayerData();
+
+  qDebug() << this->mTimeDiffStartSynchAsInt;
+  qDebug() << this->mAllPlayerData.keys().count();
+  qDebug() << this->mSynchPlayerData.keys().count();
 }
 
 QTime Spieler::getStartTime() const
 {
-    return mStartTime;
+  return this->mStartTime;
 }
 
 QPair<double, double> Spieler::getCornerTopRight() const
 {
-    return mCornerTopRight;
+  return this->mCornerTopRight;
 }
 
 QPair<double, double> Spieler::getCornerTopLeft() const
 {
-    return mCornerTopLeft;
+  return this->mCornerTopLeft;
 }
 
 QPair<double, double> Spieler::getCornerBottomRight() const
 {
-    return mCornerBottomRight;
+  return this->mCornerBottomRight;
 }
 
 QPair<double, double> Spieler::getCornerBottomLeft() const
 {
-    return mCornerBottomLeft;
+  return this->mCornerBottomLeft;
 }
 
 
@@ -211,7 +278,7 @@ void Spieler::parseData()
          continue;
      }
 
-
+     // getting all elements by splitting at ','
      QStringList elements = line.trimmed().remove(' ').split(',');
 
      parsedData data;
@@ -222,43 +289,46 @@ void Spieler::parseData()
      if(data.mActivityType == -1)
          break;
 
-     data.mLapNumber = elements[2].toInt();
-     data.mDistance = elements[3].toDouble();
-     data.mSpeed = elements[4].toDouble();
-     data.mCalories = elements[5].toDouble();
-     data.mXvalue = elements[6].toDouble();
-     data.mYvalue = elements[7].toDouble();
-     data.mElevation = elements[8].toDouble();
-     data.mHeartRate = elements[9].toInt();
-     data.mCycles = elements[10].toInt();
+     // copy our parsed data
+     data.mLapNumber  = elements[2].toInt();
+     data.mDistance   = elements[3].toDouble();
+     data.mSpeed      = elements[4].toDouble();
+     data.mCalories   = elements[5].toDouble();
+     data.mXvalue     = elements[6].toDouble();
+     data.mYvalue     = elements[7].toDouble();
+     data.mElevation  = elements[8].toDouble();
+     data.mHeartRate  = elements[9].toInt();
+     data.mCycles     = elements[10].toInt();
 
+     // insert data
+     this->mAllPlayerData.insert(timestamp,data);
 
-     mAllPlayerData.insert(timestamp,data);
-
-     if (data.mXvalue > xValueMax )
+     // getting the max and min of all values
+     if (data.mXvalue > xValueMax)
        xValueMax = data.mXvalue;
 
-     if (data.mXvalue < xValueMin )
+     if (data.mXvalue < xValueMin)
        xValueMin = data.mXvalue;
 
-     if (data.mYvalue > yValueMax )
+     if (data.mYvalue > yValueMax)
        yValueMax = data.mYvalue;
 
-     if (data.mYvalue < yValueMin )
+     if (data.mYvalue < yValueMin)
        yValueMin = data.mYvalue;
     }
 
-    mCornerBottomLeft.first = xValueMin;
-    mCornerBottomLeft.second = yValueMin;
+    // set all corners of one player
+    this->mCornerBottomLeft.first   = xValueMin;
+    this->mCornerBottomLeft.second  = yValueMin;
 
-    mCornerTopRight.first = xValueMax;
-    mCornerTopRight.second = yValueMax;
+    this->mCornerTopRight.first     = xValueMax;
+    this->mCornerTopRight.second    = yValueMax;
 
-    mCornerBottomRight.first = xValueMax;
-    mCornerBottomRight.second = yValueMin;
+    this->mCornerBottomRight.first  = xValueMax;
+    this->mCornerBottomRight.second = yValueMin;
 
-    mCornerTopLeft.first = xValueMin;
-    mCornerTopLeft.second = yValueMax;
+    this->mCornerTopLeft.first      = xValueMin;
+    this->mCornerTopLeft.second     = yValueMax;
 
 
     // a debug output

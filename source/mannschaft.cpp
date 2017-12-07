@@ -5,6 +5,7 @@
 #include <QGroupBox>
 #include <QPushButton>
 #include <QLabel>
+#include <QLineEdit>
 #include <QDebug>
 
 Mannschaft::Mannschaft(QObject *parent) : QObject(parent)
@@ -117,8 +118,9 @@ double Mannschaft::calcAverageSpeed()
 QWidget* Mannschaft::displaySpieler()
 {
   QWidget* widget = new QWidget();
-  // create the layout, to palce the Spieler-objects
+  // create the layout, to place the Spieler-objects
   QFormLayout* resultLayout = new QFormLayout;
+  QFormLayout* lyGbrTeam = new QFormLayout;
 
   //add every player
   foreach (Spieler* person, this->mListSpieler)
@@ -128,26 +130,42 @@ QWidget* Mannschaft::displaySpieler()
     cbSelect->setToolTip(TEAM_PLAYER_INDIVIDUAL_TOOLTIP + person->getPlayerName());
     cbSelect->setChecked(false);
 
-    // add the elements to the widget
-    resultLayout->addRow(cbSelect);
+    QLineEdit* edName = new QLineEdit();
+    edName->setText(person->getPlayerName());
 
+    // add the elements to the widget
+    lyGbrTeam->addRow(cbSelect, edName);
+
+    // connect to handle the event from the checkbox
     connect(cbSelect, &QCheckBox::clicked, person, &Spieler::displayData);
+
+    // connect to change the name
+    connect(edName, &QLineEdit::textChanged, person, &Spieler::setPlayerName);
   }
+
 
   if(this->mListSpieler.count() > 0)
   {
-    QGridLayout* gridLayout = new QGridLayout;
+    // create the layout for the team-data
+    QGridLayout* lyGridTeamData = new QGridLayout;
 
-    gridLayout->addWidget(new QLabel(TEAM_SPEED), 0, 0);
-    gridLayout->addWidget(new QLabel(QString::number(this->getTeamAverageSpeed())), 0, 1);
+    lyGridTeamData->addWidget(new QLabel(TEAM_SPEED), 0, 0);
+    lyGridTeamData->addWidget(new QLabel(QString::number(this->getTeamAverageSpeed())), 0, 1);
 
-    gridLayout->addWidget(new QLabel(TEAM_HEARTRATE), 1, 0);
-    gridLayout->addWidget(new QLabel(QString::number(this->getTeamAverageHeartrate())), 1, 1);
+    lyGridTeamData->addWidget(new QLabel(TEAM_HEARTRATE), 1, 0);
+    lyGridTeamData->addWidget(new QLabel(QString::number(this->getTeamAverageHeartrate())), 1, 1);
 
-    QGroupBox* grbMannschaftData = new QGroupBox(TEAM_GRB_DATA);
-    grbMannschaftData->setLayout(gridLayout);
+    // getting a groupbox for the player of a team
+    QGroupBox* grbTeam = new QGroupBox(TEAM_GRB_TEAM);
+    grbTeam->setLayout(lyGbrTeam);
 
-    resultLayout->addRow(grbMannschaftData);
+    // getting a second groubbox for the team-data
+    QGroupBox* grbTeamData = new QGroupBox(TEAM_GRB_DATA);
+    grbTeamData->setLayout(lyGridTeamData);
+
+    // add the groupboxes to the basic layout
+    resultLayout->addRow(grbTeam);
+    resultLayout->addRow(grbTeamData);
   }
 
   widget->setLayout(resultLayout);

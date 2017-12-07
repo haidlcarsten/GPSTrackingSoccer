@@ -49,6 +49,7 @@
 #define TEAM_SPEED "Geschwindigkeit:"
 #define TEAM_HEARTRATE "Herzrate:"
 #define TEAM_GRB_DATA "Mannschaftsdaten"
+#define TEAM_GRB_TEAM "Mannschaft"
 #define TEAM_PLAYER_INDIVIDUAL_TOOLTIP "Die Daten werden angezeigt bezüglich Spieler: " // remeber to look into file mannschaft.cpp to complete the tooltip if necessary
 
 

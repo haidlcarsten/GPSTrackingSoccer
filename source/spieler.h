@@ -190,6 +190,8 @@ public slots:
    */
   void displayFrameData(int aTime);
 
+  void setPlayerName(QString aText);
+
 private:
   //---------- member-variable ----------
    QString mPfad;
@@ -197,7 +199,8 @@ private:
    QString mSpielerName;
    ChartWidget* mChartWidget;
    QSlider* mSlider;
-   QMap<int,parsedData> mAllPlayerData;
+   QMap<int, parsedData> mAllPlayerData;
+   QMap<int, parsedData> mSynchPlayerData;
    double mAvgSpeed; //average speed
    float mAvgHeartRate; //average heartrate
 
@@ -207,7 +210,7 @@ private:
    QPair<double,double> mCornerTopRight;
 
    QTime mStartTime;
-   QTime synchTime;
+   QTime mSynchTime;
 
    int mTimeDiffStartSynchAsInt;
    QTime mTimeDiffStartSynch;
@@ -228,6 +231,13 @@ private:
     * value to set
     */
    void setSliderValues(int aMin, int aMax, int aValue);
+
+   /**
+    * @brief synchPlayerData
+    * synchronise the playerData with the internal synchtime
+    * all Data befor the synch-time will be ignored
+    */
+   void synchPlayerData();
 
 
 };
