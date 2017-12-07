@@ -7,6 +7,7 @@
 #include "chartwidget.h"
 
 class QLayout;
+class MainWindow;
 
 /**
  * @brief The Mannschaft class
@@ -72,6 +73,15 @@ public:
   void setSlider(QSlider* aSlider) {this->mSlider = aSlider;}
 
   /**
+   * @brief setUI
+   * set the mainwindow to react to signal and slots
+   *
+   * @param aUI
+   * the mainwindow
+   */
+  void setUI(MainWindow* aUI) {this->mMainWindow = aUI;}
+
+  /**
    * @brief getTeamSpeed
    * getter for team-speet
    *
@@ -121,15 +131,17 @@ public:
 
 signals:
   /**
-   * @brief playerChanged
+   * @brief playersChanged
    * signal emit, after player-data changed
    */
-  void playerChanged();
+  void playersChanged();
 
 public slots:
 
 private:
 //---------- member-variable ----------
+  MainWindow* mMainWindow = NULL;
+
   QList<Spieler*> mListSpieler;
   ChartWidget* mChartWidget;
   QSlider* mSlider;
@@ -143,6 +155,12 @@ private:
   QPair<double,double> mCornerTopLeft;
   QPair<double,double> mCornerTopRight;
 
+
+  /**
+   * @brief initTeam
+   * initalise the team
+   */
+  void initTeam();
 
 };
 

@@ -34,6 +34,14 @@ public:
    * default-destructor
    */
   ~MainWindow();
+public slots:
+
+  /**
+   * @brief reDrawSpielerList
+   * both mannschaft-objects will we drawn new
+   */
+  void reDrawSpielerList();
+
 
 private slots:
   /**
@@ -53,12 +61,6 @@ private slots:
    * creates an file-open-dialog to add a player to an specific mannschaft
    */
   void showFileOpenDialogAddPlayer();
-
-  /**
-   * @brief reDrawSpielerList
-   * both mannschaft-objects will we drawn new
-   */
-  void reDrawSpielerList();
 
   /**
    * @brief showHelpMenuDialog
@@ -88,15 +90,6 @@ private:
   Mannschaft mMannschaftGegner;
 
 //---------- private auxiliary-functions ----------
-
-  /**
-   * @brief initMannschaft
-   * initalise the given Mannschaft
-   *
-   * @param aMannschaft
-   * Mannschaft to initialise
-   */
-  void initMannschaft(Mannschaft &aMannschaft);
 
   /**
    * @brief createMenusAndActions

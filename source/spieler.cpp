@@ -46,6 +46,10 @@ Spieler::Spieler(QString aPfad)
   // at the begin the timediff is zero
   this->mTimeDiffStartSynchAsInt = 0;
   this->mTimeDiffStartSynch = QTime(0, 0, 0);
+
+  this->calcAverageSpeed();
+  this->calcAverageHeartRate();
+
 }
 
 QString Spieler::getFileName() const
@@ -106,32 +110,9 @@ void Spieler::displayData(bool aDisplay)
   // if we should display the player or not
   if(aDisplay)
   {
-    widgetToDisplay = new QWidget;
-    QVBoxLayout* basicLayout = new QVBoxLayout;
+    widgetToDisplay = this->generatePlayerDataWidget();
 
-    QGridLayout* layout = new QGridLayout();
-
-    QLabel* lblName = new QLabel(PLAYER_NAME);
-    QLabel* lblSpielerName = new QLabel(this->getFileName());
-    layout->addWidget(lblName, 0, 0);
-    layout->addWidget(lblSpielerName, 0, 1);
-
-    QLabel* lblSpeedAvg = new QLabel(PLAYER_AVERAGE_SPEED);
-    QLabel* lblSpielerSpeedAvg = new QLabel(QString::number(this->getSpeed()));
-    layout->addWidget(lblSpeedAvg, 1, 0);
-    layout->addWidget(lblSpielerSpeedAvg, 1, 1);
-
-    QLabel* lblHeartRateAvg = new QLabel(PLAYER_AVERAGE_HEARTRATE);
-    QLabel* lblSpielerHeartRateAvg = new QLabel(QString::number(this->getHeartRate()));
-    layout->addWidget(lblHeartRateAvg, 2, 0);
-    layout->addWidget(lblSpielerHeartRateAvg, 2, 1);
-
-    basicLayout->addLayout(layout);
-    basicLayout->setAlignment(layout, Qt::AlignTop);
-
-    widgetToDisplay->setLayout(basicLayout);
-
-    this->setSliderValues(this->mAllPlayerData.firstKey(), this->mAllPlayerData.lastKey(), 0);
+    this->setSliderValues(this->mSynchPlayerData.firstKey(), this->mSynchPlayerData.lastKey(), 0);
   }
   else
   {
@@ -191,6 +172,37 @@ void Spieler::synchPlayerData()
   }
 }
 
+QWidget *Spieler::generatePlayerDataWidget()
+{
+  QWidget* result = new QWidget();
+
+  QVBoxLayout* basicLayout = new QVBoxLayout;
+
+  QGridLayout* layout = new QGridLayout();
+
+  QLabel* lblName = new QLabel(PLAYER_NAME);
+  QLabel* lblSpielerName = new QLabel(this->getPlayerName());
+  layout->addWidget(lblName, 0, 0);
+  layout->addWidget(lblSpielerName, 0, 1);
+
+  QLabel* lblSpeedAvg = new QLabel(PLAYER_AVERAGE_SPEED);
+  QLabel* lblSpielerSpeedAvg = new QLabel(QString::number(this->getSpeed()));
+  layout->addWidget(lblSpeedAvg, 1, 0);
+  layout->addWidget(lblSpielerSpeedAvg, 1, 1);
+
+  QLabel* lblHeartRateAvg = new QLabel(PLAYER_AVERAGE_HEARTRATE);
+  QLabel* lblSpielerHeartRateAvg = new QLabel(QString::number(this->getHeartRate()));
+  layout->addWidget(lblHeartRateAvg, 2, 0);
+  layout->addWidget(lblSpielerHeartRateAvg, 2, 1);
+
+  basicLayout->addLayout(layout);
+  basicLayout->setAlignment(layout, Qt::AlignTop);
+
+  result->setLayout(basicLayout);
+
+  return result;
+}
+
 void Spieler::displayFrameData(int aTime)
 {
   Q_UNUSED(aTime)
@@ -200,7 +212,6 @@ void Spieler::displayFrameData(int aTime)
 void Spieler::setPlayerName(QString aText)
 {
   this->mSpielerName = aText;
-  qDebug() << this->mSpielerName;
 }
 
 QTime Spieler::getSynchTime() const

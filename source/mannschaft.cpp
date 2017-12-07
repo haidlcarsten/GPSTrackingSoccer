@@ -7,11 +7,12 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QDebug>
+#include "mainwindow.h"
 
 Mannschaft::Mannschaft(QObject *parent) : QObject(parent)
 {
-    this->mAvgHeartrate = 0;
-    this->mAvgSpeed = 0;
+  this->mAvgHeartrate = 0;
+  this->mAvgSpeed = 0;
 }
 
 void Mannschaft::neuerSpieler(QString aPfad)
@@ -19,10 +20,20 @@ void Mannschaft::neuerSpieler(QString aPfad)
   Spieler* person = new Spieler(aPfad);
   person->setChartWidget(this->mChartWidget);
   person->setSlider(this->mSlider);
-  person->calcAverageSpeed();
-  person->calcAverageHeartRate();
 
   this->mListSpieler.append(person);
+
+  this->initTeam();
+
+  emit playersChanged();
+}
+
+void Mannschaft::initTeam()
+{
+  this->calcAverageHeartrate();
+  this->calcAverageSpeed();
+  this->calcMeanCornePoint();
+  this->calcSynchPoint();
 }
 
 void Mannschaft::neueSpieler(QStringList aPfade)
@@ -126,7 +137,7 @@ QWidget* Mannschaft::displaySpieler()
   foreach (Spieler* person, this->mListSpieler)
   {
     // element, we can react to
-    QCheckBox* cbSelect = new QCheckBox(person->getPlayerName(), NULL);
+    QCheckBox* cbSelect = new QCheckBox(person->getFileName(), NULL);
     cbSelect->setToolTip(TEAM_PLAYER_INDIVIDUAL_TOOLTIP + person->getPlayerName());
     cbSelect->setChecked(false);
 
@@ -141,6 +152,9 @@ QWidget* Mannschaft::displaySpieler()
 
     // connect to change the name
     connect(edName, &QLineEdit::textChanged, person, &Spieler::setPlayerName);
+
+//    if(this->mMainWindow)
+//      connect(edName, &QLineEdit::editingFinished, this->mMainWindow, &MainWindow::reDrawSpielerList);
   }
 
 

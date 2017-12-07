@@ -190,6 +190,13 @@ public slots:
    */
   void displayFrameData(int aTime);
 
+  /**
+   * @brief setPlayerName
+   * slot for setting the playername
+   *
+   * @param aText
+   * new playername
+   */
   void setPlayerName(QString aText);
 
 private:
@@ -238,6 +245,15 @@ private:
     * all Data befor the synch-time will be ignored
     */
    void synchPlayerData();
+
+   /**
+    * @brief generatePlayerDataWidget
+    * creates a basic widget for the player
+    *
+    * @return
+    * widget with the playerData
+    */
+   QWidget*  generatePlayerDataWidget();
 
 
 };

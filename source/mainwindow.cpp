@@ -17,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->dockWidgetHeim->setWindowTitle(MW_TEAM_HOME_DOCK);
   ui->dockWidgetGegner->setWindowTitle(MW_TEAM_ENEMY_DOCK);
 
+  this->mMannschaftHeim.setUI(this);
+  this->mMannschaftGegner.setUI(this);
+
   this->mMannschaftHeim.setChartWidget(ui->widget);
   this->mMannschaftHeim.setSlider(ui->horizontalSlider);
 
@@ -25,8 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
   createMenusAndActions();
 
-  connect(&mMannschaftHeim, &Mannschaft::playerChanged, this, &MainWindow::reDrawSpielerList);
-  connect(&mMannschaftGegner, &Mannschaft::playerChanged, this, &MainWindow::reDrawSpielerList);
+  connect(&mMannschaftHeim, &Mannschaft::playersChanged, this, &MainWindow::reDrawSpielerList);
+  connect(&mMannschaftGegner, &Mannschaft::playersChanged, this, &MainWindow::reDrawSpielerList);
 
   loadSettings();
 }
@@ -72,11 +75,6 @@ void MainWindow::showFileOpenDialogMannschaftHeim()
   QStringList fileNames = this->showFileOpenDialog();
 
   this->mMannschaftHeim.neueSpieler(fileNames);
-
-
-  this->initMannschaft(mMannschaftHeim);
-
-  this->reDrawSpielerList();
 }
 
 void MainWindow::showFileOpenDialogMannschaftGegner()
@@ -84,10 +82,6 @@ void MainWindow::showFileOpenDialogMannschaftGegner()
   QStringList fileNames = this->showFileOpenDialog();
 
   this->mMannschaftGegner.neueSpieler(fileNames);
-
-  this->initMannschaft(mMannschaftGegner);
-
-  this->reDrawSpielerList();
 }
 
 void MainWindow::showFileOpenDialogAddPlayer()
@@ -142,16 +136,6 @@ void MainWindow::showInformationDialog()
                            APPLICATION_NAME,
                            MW_ABOUT_TEXT,
                            QMessageBox::Ok);
-}
-
-void MainWindow::initMannschaft(Mannschaft &aMannschaft)
-{
-  aMannschaft.calcAverageHeartrate();
-  aMannschaft.getTeamAverageHeartrate();
-  aMannschaft.calcAverageSpeed();
-  aMannschaft.getTeamAverageSpeed();
-  aMannschaft.calcMeanCornePoint();
-  aMannschaft.calcSynchPoint();
 }
 
 void MainWindow::showSettingsDialog()
