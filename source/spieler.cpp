@@ -15,6 +15,14 @@
 
 Spieler::Spieler(QString aPfad)
 { 
+#ifdef Q_OS_LINUX
+  this->mSettings = new QSettings("." + QApplication::applicationDirPath().left(1) + SETTINGS_FILE_PATH, QSettings::IniFormat);
+#endif
+
+#ifdef Q_OS_WIN
+  this->mSettings = new QSettings(QApplication::applicationDirPath().left(1) + SETTINGS_FILE_PATH, QSettings::IniFormat);
+#endif
+
   this->mPfad = aPfad;
 
   // getting the filename
@@ -158,7 +166,6 @@ void Spieler::synchPlayerData()
   for(int i = 0; i < amountKeys; i++)
   {
     // in this case, we dont need to check the key, because the key is just a number
-
     int pos = i + this->mTimeDiffStartSynchAsInt;
     parsedData data;
     if(pos <= amountKeys)
@@ -172,8 +179,8 @@ void Spieler::synchPlayerData()
       data.mDistance   = 0.0;
       data.mSpeed      = 0.0;
       data.mCalories   = 0.0;
-      data.mLatitude     = 0.0;
-      data.mLongitude     = 0.0;
+      data.mLatitude   = 0.0;
+      data.mLongitude  = 0.0;
       data.mElevation  = 0.0;
       data.mHeartRate  = 0;
       data.mCycles     = 0;
@@ -219,16 +226,9 @@ void Spieler::transfromPlayerData()
   if(this->mDataIsTransformed)
     return;
 
-#ifdef Q_OS_LINUX
-  QSettings settings("." + QApplication::applicationDirPath().left(1) + SETTINGS_FILE_PATH, QSettings::IniFormat);
-#endif
 
-#ifdef Q_OS_WIN
-  QSettings settings(QApplication::applicationDirPath().left(1) + SETTINGS_FILE_PATH, QSettings::IniFormat);
-#endif
-
-  double settingsLongitude = settings.value(SETTINGS_COORDINATES_BOTTOM_LEFT_LONGITUDE).toDouble();
-  double settingsLatitude = settings.value(SETTINGS_COORDINATES_BOTTOM_LEFT_LATITUDE).toDouble();
+  double settingsLongitude = this->mSettings->value(SETTINGS_COORDINATES_BOTTOM_LEFT_LONGITUDE).toDouble();
+  double settingsLatitude = this->mSettings->value(SETTINGS_COORDINATES_BOTTOM_LEFT_LATITUDE).toDouble();
 
   // transform the data
 
@@ -249,8 +249,8 @@ void Spieler::transfromPlayerData()
     dataTransform.mSpeed        = data.mSpeed;
 
     // transform the coordinates
-    dataTransform.mLatitude     = data.mLatitude - settingsLatitude;
-    dataTransform.mLongitude    = data.mLongitude - settingsLongitude;
+    dataTransform.mLatitude     = (data.mLatitude - settingsLatitude);
+    dataTransform.mLongitude    = (data.mLongitude - settingsLongitude);
 
     this->mTransformedPlayerData.insert(time, dataTransform);
   }
@@ -260,15 +260,38 @@ void Spieler::transfromPlayerData()
 
 void Spieler::displayFrameData(int aTime)
 {
-  Q_UNUSED(aTime)
 
+  int skip = this->mSettings->value(SETTINGS_SKIP_PLAYERDATA).toInt();
+  double markersize = this->mSettings->value(SETTINGS_MARKERSIZE_PLAYERDATA).toDouble();
   this->transfromPlayerData();
 
 
+  QScatterSeries *seriesdata = new QScatterSeries();
+  seriesdata->setName(this->getPlayerName());
+  seriesdata->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+  seriesdata->setMarkerSize(markersize);
+
+
+  for(int i = 0; i < aTime; i+= skip+1)
+  {
+    parsedData data = this->mTransformedPlayerData.value(i);
+
+    seriesdata->append(data.mLatitude, data.mLongitude);
+  }
+
+
   QChart *chart = new QChart();
+  chart->addSeries(seriesdata);
+
+  chart->setTitle("Simple scatterchart example");
+  chart->createDefaultAxes();
+  chart->setDropShadowEnabled(false);
+
   QChartView *chartView = new QChartView(chart);
 
   this->mPlayerCoordWidget = chartView;
+
+  this->mChartWidget->setChartWidget(this->mPlayerCoordWidget);
 }
 
 void Spieler::setPlayerName(QString aText)

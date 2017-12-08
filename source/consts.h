@@ -17,6 +17,9 @@
 // Settingsdialog
 #define STD_WINDOW_TITLE "Einstellungen"
 #define STD_GRBBOX_COORDINATES "Koordinaten"
+#define STD_GRBBOX_SKIP_PLAYERDATA "Spielerdaten"
+#define STD_LBL_SKIP_PLAYERDATA "Wie viele Punkte sollen beim Zeichnen übersprungen werden:"
+#define STD_LBL_MARKERSIZE_PLAYERDATA "Wie groß sollen die Punkte gezeichnet werden:"
 #define STD_LBL_LONGITUDE "Längengrad"
 #define STD_LBL_LATITUDE "Breitengrad"
 #define STD_LBL_CORNER_BOTTOM_LEFT "Ecke unten links:"

@@ -41,4 +41,7 @@ struct parsedData
 #define SETTINGS_COORDINATES_TOP_RIGHT_LONGITUDE "settings_coordinates_top_right_longitude"
 #define SETTINGS_COORDINATES_TOP_RIGHT_LATITUDE "settings_coordinates_top_right_latitude"
 
+#define SETTINGS_SKIP_PLAYERDATA "settings_skip_playerdata"
+#define SETTINGS_MARKERSIZE_PLAYERDATA "settings_markersize_playerdata"
+
 #endif // TYPEDEF_H

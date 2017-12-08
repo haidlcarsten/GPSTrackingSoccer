@@ -23,6 +23,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
   ui->edCornerTopLeftLongitude->setValidator(new QDoubleValidator(0, DBL_MAX, 10));
   ui->edCornerTopRightLongitude->setValidator(new QDoubleValidator(0, DBL_MAX, 10));
 
+  ui->edSkipPlayerData->setValidator(new QIntValidator(0, INT_MAX));
+
   //setting the correct tab-order
   QWidget::setTabOrder(ui->edCornerBottomLeftLatitude, ui->edCornerBottomLeftLongitude);
   QWidget::setTabOrder(ui->edCornerBottomLeftLongitude, ui->edCornerBottomRightLatitude);
@@ -42,6 +44,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
   ui->lblCornerBottomRight->setText(STD_LBL_CORNER_BOTTOM_RIGHT);
   ui->lblCornerTopLeft->setText(STD_LBL_CORNER_TOP_LEFT);
   ui->lblCornerTopRight->setText(STD_LBL_CORNER_TOP_RIGHT);
+  ui->grbSkipPlayerData->setTitle(STD_GRBBOX_SKIP_PLAYERDATA);
+  ui->lblSkipPlayerData->setText(STD_LBL_SKIP_PLAYERDATA);
+  ui->lblMarkerSize->setText(STD_LBL_MARKERSIZE_PLAYERDATA);
 
   ui->edCornerBottomLeftLatitude->setToolTip(STD_CORNER_BOTTOM_LEFT_LAT_TOOLTIP);
   ui->edCornerBottomLeftLongitude->setToolTip(STD_CORNER_BOTTOM_LEFT_LONG_TOOLTIP);
@@ -85,6 +90,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     ui->edCornerTopRightLatitude->setText(QString::number(settings.value(SETTINGS_COORDINATES_TOP_RIGHT_LATITUDE).toDouble()));
     ui->edCornerTopRightLongitude->setText(QString::number(settings.value(SETTINGS_COORDINATES_TOP_RIGHT_LONGITUDE).toDouble()));
+
+    ui->edSkipPlayerData->setText(QString::number(settings.value(SETTINGS_SKIP_PLAYERDATA, 2).toInt()));
+    ui->edMarkerSize->setText(QString::number(settings.value(SETTINGS_MARKERSIZE_PLAYERDATA, 7.5).toDouble()));
   }
 }
 
@@ -154,6 +162,9 @@ void SettingsDialog::accept()
 
   settings.setValue(SETTINGS_COORDINATES_TOP_RIGHT_LATITUDE, ui->edCornerTopRightLatitude->text().replace(',',".").toDouble());
   settings.setValue(SETTINGS_COORDINATES_TOP_RIGHT_LONGITUDE, ui->edCornerTopRightLongitude->text().replace(',',".").toDouble());
+
+  settings.setValue(SETTINGS_SKIP_PLAYERDATA, ui->edSkipPlayerData->text().toInt());
+  settings.setValue(SETTINGS_MARKERSIZE_PLAYERDATA, ui->edMarkerSize->text().replace(',',".").toDouble());
 
   settings.sync();
 

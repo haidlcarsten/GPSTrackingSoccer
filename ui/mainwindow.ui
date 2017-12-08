@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1065</width>
-    <height>550</height>
+    <width>1366</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -46,7 +46,7 @@
     <item row="0" column="0">
      <widget class="ChartWidget" name="widget" native="true">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -60,7 +60,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1065</width>
+     <width>1366</width>
      <height>21</height>
     </rect>
    </property>

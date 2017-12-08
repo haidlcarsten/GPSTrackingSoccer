@@ -4,12 +4,14 @@
 #include <QObject>
 #include "chartwidget.h"
 #include <qdebug.h>
-#include"typedef.h"
+#include "typedef.h"
 #include <QObject>
 #include <QMap>
 #include <QPair>
 #include <QTime>
 
+
+class QSettings;
 /**
  * @brief The Spieler class
  * a player has different properties. It holds his own data and calculates some
@@ -201,6 +203,7 @@ public slots:
 
 private:
   //---------- member-variable ----------
+   QSettings* mSettings;
    QString mPfad;
    QString mFilename;
    QString mSpielerName;
