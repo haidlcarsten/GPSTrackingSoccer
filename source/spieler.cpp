@@ -9,7 +9,7 @@
 #include <QMap>
 #include <QFileInfo>
 #include <QDebug>
-
+#include <QtMath>
 
 #include <QtCharts>
 
@@ -226,12 +226,15 @@ void Spieler::transfromPlayerData()
   if(this->mDataIsTransformed)
     return;
 
+  double bottomLeftLong = this->mSettings->value(SETTINGS_COORDINATES_BOTTOM_LEFT_LONGITUDE).toDouble();
+  double bottomLeftLat = this->mSettings->value(SETTINGS_COORDINATES_BOTTOM_LEFT_LATITUDE).toDouble();
 
-  double settingsLongitude = this->mSettings->value(SETTINGS_COORDINATES_BOTTOM_LEFT_LONGITUDE).toDouble();
-  double settingsLatitude = this->mSettings->value(SETTINGS_COORDINATES_BOTTOM_LEFT_LATITUDE).toDouble();
+  double bottomrightLong = this->mSettings->value(SETTINGS_COORDINATES_BOTTOM_RIGHT_LONGITUDE).toDouble();
+  double bottomrightLat = this->mSettings->value(SETTINGS_COORDINATES_BOTTEM_RIGHT_LATITUDE).toDouble();
+
+  double ratio = qAtan2((bottomrightLong - bottomLeftLong), (bottomrightLat - bottomLeftLat));
 
   // transform the data
-
   foreach (int time, this->mSynchPlayerData.keys())
   {
     parsedData data = this->mSynchPlayerData.value(time);
@@ -249,8 +252,11 @@ void Spieler::transfromPlayerData()
     dataTransform.mSpeed        = data.mSpeed;
 
     // transform the coordinates
-    dataTransform.mLatitude     = (data.mLatitude - settingsLatitude);
-    dataTransform.mLongitude    = (data.mLongitude - settingsLongitude);
+    double coordLatitude    = (data.mLatitude - bottomLeftLat );
+    double coordLongitude   = (data.mLongitude - bottomLeftLong);
+
+    dataTransform.mLatitude     = coordLatitude * qCos(ratio) - coordLongitude * qSin(ratio) ;
+    dataTransform.mLongitude    = coordLongitude * qCos(ratio) + coordLatitude * qSin(ratio);
 
     this->mTransformedPlayerData.insert(time, dataTransform);
   }
