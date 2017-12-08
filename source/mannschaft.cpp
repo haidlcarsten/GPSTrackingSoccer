@@ -137,7 +137,7 @@ QWidget* Mannschaft::displaySpieler()
   foreach (Spieler* person, this->mListSpieler)
   {
     // element, we can react to
-    QCheckBox* cbSelect = new QCheckBox(person->getFileName(), NULL);
+    QCheckBox* cbSelect = new QCheckBox(person->getPlayerName(), NULL);
     cbSelect->setToolTip(TEAM_PLAYER_INDIVIDUAL_TOOLTIP + person->getPlayerName());
     cbSelect->setChecked(false);
 
@@ -164,10 +164,10 @@ QWidget* Mannschaft::displaySpieler()
     QGridLayout* lyGridTeamData = new QGridLayout;
 
     lyGridTeamData->addWidget(new QLabel(TEAM_SPEED), 0, 0);
-    lyGridTeamData->addWidget(new QLabel(QString::number(this->getTeamAverageSpeed())), 0, 1);
+    lyGridTeamData->addWidget(new QLabel(QString::number(this->getTeamAverageSpeed()) + " m/s"), 0, 1);
 
     lyGridTeamData->addWidget(new QLabel(TEAM_HEARTRATE), 1, 0);
-    lyGridTeamData->addWidget(new QLabel(QString::number(this->getTeamAverageHeartrate())), 1, 1);
+    lyGridTeamData->addWidget(new QLabel(QString::number(this->getTeamAverageHeartrate()) + " bpm"), 1, 1);
 
     // getting a groupbox for the player of a team
     QGroupBox* grbTeam = new QGroupBox(TEAM_GRB_TEAM);

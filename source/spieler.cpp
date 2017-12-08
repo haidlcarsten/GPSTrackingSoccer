@@ -9,8 +9,9 @@
 #include <QMap>
 #include <QFileInfo>
 #include <QDebug>
-#include <limits>
 
+
+#include <QtCharts>
 
 Spieler::Spieler(QString aPfad)
 { 
@@ -49,7 +50,6 @@ Spieler::Spieler(QString aPfad)
 
   this->calcAverageSpeed();
   this->calcAverageHeartRate();
-
 }
 
 QString Spieler::getFileName() const
@@ -110,7 +110,18 @@ void Spieler::displayData(bool aDisplay)
   // if we should display the player or not
   if(aDisplay)
   {
-    widgetToDisplay = this->generatePlayerDataWidget();
+    QGridLayout* lyForm = new QGridLayout;
+
+    auto datawidget = this->generatePlayerDataWidget();
+    this->displayFrameData(this->mSlider->value());
+
+    lyForm->addWidget(datawidget, 0, 0);
+
+    if(this->mPlayerCoordWidget)
+      lyForm->addWidget(this->mPlayerCoordWidget, 1, 0);
+
+    widgetToDisplay = new QWidget;
+    widgetToDisplay->setLayout(lyForm);
 
     this->setSliderValues(this->mSynchPlayerData.firstKey(), this->mSynchPlayerData.lastKey(), 0);
   }
@@ -161,8 +172,8 @@ void Spieler::synchPlayerData()
       data.mDistance   = 0.0;
       data.mSpeed      = 0.0;
       data.mCalories   = 0.0;
-      data.mXvalue     = 0.0;
-      data.mYvalue     = 0.0;
+      data.mLatitude     = 0.0;
+      data.mLongitude     = 0.0;
       data.mElevation  = 0.0;
       data.mHeartRate  = 0;
       data.mCycles     = 0;
@@ -186,12 +197,12 @@ QWidget *Spieler::generatePlayerDataWidget()
   layout->addWidget(lblSpielerName, 0, 1);
 
   QLabel* lblSpeedAvg = new QLabel(PLAYER_AVERAGE_SPEED);
-  QLabel* lblSpielerSpeedAvg = new QLabel(QString::number(this->getSpeed()));
+  QLabel* lblSpielerSpeedAvg = new QLabel(QString::number(this->getSpeed()) + " m/s");
   layout->addWidget(lblSpeedAvg, 1, 0);
   layout->addWidget(lblSpielerSpeedAvg, 1, 1);
 
   QLabel* lblHeartRateAvg = new QLabel(PLAYER_AVERAGE_HEARTRATE);
-  QLabel* lblSpielerHeartRateAvg = new QLabel(QString::number(this->getHeartRate()));
+  QLabel* lblSpielerHeartRateAvg = new QLabel(QString::number(this->getHeartRate()) + " bpm");
   layout->addWidget(lblHeartRateAvg, 2, 0);
   layout->addWidget(lblSpielerHeartRateAvg, 2, 1);
 
@@ -203,10 +214,61 @@ QWidget *Spieler::generatePlayerDataWidget()
   return result;
 }
 
+void Spieler::transfromPlayerData()
+{
+  if(this->mDataIsTransformed)
+    return;
+
+#ifdef Q_OS_LINUX
+  QSettings settings("." + QApplication::applicationDirPath().left(1) + SETTINGS_FILE_PATH, QSettings::IniFormat);
+#endif
+
+#ifdef Q_OS_WIN
+  QSettings settings(QApplication::applicationDirPath().left(1) + SETTINGS_FILE_PATH, QSettings::IniFormat);
+#endif
+
+  double settingsLongitude = settings.value(SETTINGS_COORDINATES_BOTTOM_LEFT_LONGITUDE).toDouble();
+  double settingsLatitude = settings.value(SETTINGS_COORDINATES_BOTTOM_LEFT_LATITUDE).toDouble();
+
+  // transform the data
+
+  foreach (int time, this->mSynchPlayerData.keys())
+  {
+    parsedData data = this->mSynchPlayerData.value(time);
+
+    parsedData dataTransform;
+
+    // set same values
+    dataTransform.mActivityType = data.mActivityType;
+    dataTransform.mCalories     = data.mCalories;
+    dataTransform.mCycles       = data.mCycles;
+    dataTransform.mDistance     = data.mDistance;
+    dataTransform.mHeartRate    = data.mHeartRate;
+    dataTransform.mElevation    = data.mElevation;
+    dataTransform.mLapNumber    = data.mLapNumber;
+    dataTransform.mSpeed        = data.mSpeed;
+
+    // transform the coordinates
+    dataTransform.mLatitude     = data.mLatitude - settingsLatitude;
+    dataTransform.mLongitude    = data.mLongitude - settingsLongitude;
+
+    this->mTransformedPlayerData.insert(time, dataTransform);
+  }
+
+  this->mDataIsTransformed = true;
+}
+
 void Spieler::displayFrameData(int aTime)
 {
   Q_UNUSED(aTime)
 
+  this->transfromPlayerData();
+
+
+  QChart *chart = new QChart();
+  QChartView *chartView = new QChartView(chart);
+
+  this->mPlayerCoordWidget = chartView;
 }
 
 void Spieler::setPlayerName(QString aText)
@@ -221,7 +283,6 @@ QTime Spieler::getSynchTime() const
 
 void Spieler::calcSynchTime(QTime aSynchTime)
 {
-
   // calculate the difference between the given time to our starttime, the given time should alway be later or same
   int hour = aSynchTime.hour() - this->mStartTime.hour();
   int min = aSynchTime.minute() - this->mStartTime.minute();
@@ -232,10 +293,6 @@ void Spieler::calcSynchTime(QTime aSynchTime)
 
   // synch the playerdata
   this->synchPlayerData();
-
-  qDebug() << this->mTimeDiffStartSynchAsInt;
-  qDebug() << this->mAllPlayerData.keys().count();
-  qDebug() << this->mSynchPlayerData.keys().count();
 }
 
 QTime Spieler::getStartTime() const
@@ -305,8 +362,8 @@ void Spieler::parseData()
      data.mDistance   = elements[3].toDouble();
      data.mSpeed      = elements[4].toDouble();
      data.mCalories   = elements[5].toDouble();
-     data.mXvalue     = elements[6].toDouble();
-     data.mYvalue     = elements[7].toDouble();
+     data.mLatitude     = elements[6].toDouble();
+     data.mLongitude     = elements[7].toDouble();
      data.mElevation  = elements[8].toDouble();
      data.mHeartRate  = elements[9].toInt();
      data.mCycles     = elements[10].toInt();
@@ -315,17 +372,17 @@ void Spieler::parseData()
      this->mAllPlayerData.insert(timestamp,data);
 
      // getting the max and min of all values
-     if (data.mXvalue > xValueMax)
-       xValueMax = data.mXvalue;
+     if (data.mLatitude > xValueMax)
+       xValueMax = data.mLatitude;
 
-     if (data.mXvalue < xValueMin)
-       xValueMin = data.mXvalue;
+     if (data.mLatitude < xValueMin)
+       xValueMin = data.mLatitude;
 
-     if (data.mYvalue > yValueMax)
-       yValueMax = data.mYvalue;
+     if (data.mLongitude > yValueMax)
+       yValueMax = data.mLongitude;
 
-     if (data.mYvalue < yValueMin)
-       yValueMin = data.mYvalue;
+     if (data.mLongitude < yValueMin)
+       yValueMin = data.mLongitude;
     }
 
     // set all corners of one player

@@ -34,6 +34,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
 
   // define the textes
+  this->setWindowTitle(STD_WINDOW_TITLE);
   ui->grbCoordinats->setTitle(STD_GRBBOX_COORDINATES);
   ui->lblLaengengrad->setText(STD_LBL_LONGITUDE);
   ui->lblBreitengrad->setText(STD_LBL_LATITUDE);

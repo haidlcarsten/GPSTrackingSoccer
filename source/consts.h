@@ -15,6 +15,7 @@
 
 
 // Settingsdialog
+#define STD_WINDOW_TITLE "Einstellungen"
 #define STD_GRBBOX_COORDINATES "Koordinaten"
 #define STD_LBL_LONGITUDE "Längengrad"
 #define STD_LBL_LATITUDE "Breitengrad"

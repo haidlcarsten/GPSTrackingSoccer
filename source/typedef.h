@@ -9,14 +9,14 @@
  */
 struct parsedData
 {
-    int mTime;
+//    int mTime;
     int mActivityType;
     int mLapNumber;
     double mDistance;
     double mSpeed;
     double  mCalories;
-    double mXvalue;
-    double mYvalue;
+    double mLatitude;
+    double mLongitude;
     double mElevation;
     int mHeartRate;
     int mCycles;
@@ -24,13 +24,13 @@ struct parsedData
 
 
 // consts for settings
+#define APPLICATION_PATH "." + QApplication::applicationDirPath().left(1)
 #define SETTINGS_FILE_PATH "config.ini"
 
 #define SETTINGS_COORDINATES_EXISTS "settings_coordinates_exists"
 
 #define SETTINGS_COORDINATES_BOTTOM_LEFT_LONGITUDE "settings_coordinates_bottom_left_longitude"
 #define SETTINGS_COORDINATES_BOTTOM_LEFT_LATITUDE "settings_coordinates_bottom_left_latitude"
-
 
 #define SETTINGS_COORDINATES_BOTTOM_RIGHT_LONGITUDE "settings_coordinates_bottom_right_longitude"
 #define SETTINGS_COORDINATES_BOTTEM_RIGHT_LATITUDE "settings_coordinates_bottom_right_latitude"

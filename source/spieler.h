@@ -205,9 +205,12 @@ private:
    QString mFilename;
    QString mSpielerName;
    ChartWidget* mChartWidget;
+   QWidget* mPlayerCoordWidget;
    QSlider* mSlider;
    QMap<int, parsedData> mAllPlayerData;
    QMap<int, parsedData> mSynchPlayerData;
+   QMap<int, parsedData> mTransformedPlayerData;
+   bool mDataIsTransformed = false;
    double mAvgSpeed; //average speed
    float mAvgHeartRate; //average heartrate
 
@@ -255,6 +258,8 @@ private:
     */
    QWidget*  generatePlayerDataWidget();
 
+
+    void transfromPlayerData();
 
 };
 
