@@ -148,7 +148,9 @@ void MainWindow::loadSettings()
 {
 #ifdef Q_OS_LINUX
   QSettings settings("." + QApplication::applicationDirPath().left(1) + SETTINGS_FILE_PATH, QSettings::IniFormat);
-#elif Q_OS_WIN
+#endif
+
+#ifdef Q_OS_WIN
   QSettings settings(QApplication::applicationDirPath().left(1) + SETTINGS_FILE_PATH, QSettings::IniFormat);
 #endif
 
