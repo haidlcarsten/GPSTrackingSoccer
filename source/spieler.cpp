@@ -135,7 +135,7 @@ void Spieler::displayData(bool aDisplay)
     {
       parsedData data = this->mTransformedPlayerData.value(i);
       if(data.mActivityType != -1)
-        seriesdata->append(data.mLatitude, data.mLongitude);
+        seriesdata->append(data.mLongitude,data.mLatitude);
     }
 
     QChart *chart = new QChart();
@@ -360,14 +360,14 @@ void Spieler::transfromPlayerData()
 
     //detect player outside of the field
 
-    if ((dataTransform.mLatitude < dataTransform.cLeftBottomlat-0.00001 && dataTransform.mLongitude > dataTransform.cLeftBottomlong )
-            || (dataTransform.mLongitude < dataTransform.cLeftBottomlong-0.00001 && dataTransform.mLatitude > dataTransform.cLeftBottomlat )
-            || (dataTransform.mLatitude < dataTransform.cLeftBottomlat-0.00001 && dataTransform.mLongitude < dataTransform.cLeftBottomlong-0.00001 )
-            || (dataTransform.mLongitude > dataTransform.cRightBottomlong + 0.00001 && dataTransform.mLatitude < dataTransform.cRightBottomlat-0.00001 )
-            || (dataTransform.mLongitude > dataTransform.cRightBottomlong + 0.00001 && dataTransform.mLatitude < dataTransform.cRightToplat )
-            || (dataTransform.mLongitude > dataTransform.cRightToplong + 0.00001 && dataTransform.mLatitude > dataTransform.cRightToplat + 0.00001)
-            || (dataTransform.mLongitude > dataTransform.cLeftToplong && dataTransform.mLatitude > dataTransform.cRightToplat + 0.00001)
-            || (dataTransform.mLongitude < dataTransform.cLeftToplong - 0.00001 && dataTransform.mLatitude > dataTransform.cLeftToplat + 0.00001))
+    if ((dataTransform.mLatitude < dataTransform.cLeftBottomLat-0.00001 && dataTransform.mLongitude > dataTransform.cLeftBottomLong )
+            || (dataTransform.mLongitude < dataTransform.cLeftBottomLong - 0.00001 && dataTransform.mLatitude > dataTransform.cLeftBottomLat )
+            || (dataTransform.mLatitude < dataTransform.cLeftBottomLat - 0.00001 && dataTransform.mLongitude < dataTransform.cLeftBottomLong - 0.00001 )
+            || (dataTransform.mLongitude > dataTransform.cRightBottomLong + 0.00001 && dataTransform.mLatitude < dataTransform.cRightBottomLat - 0.00001 )
+            || (dataTransform.mLongitude > dataTransform.cRightBottomLong + 0.00001 && dataTransform.mLatitude < dataTransform.cRightTopLat )
+            || (dataTransform.mLongitude > dataTransform.cRightTopLong + 0.00001 && dataTransform.mLatitude > dataTransform.cRightTopLat + 0.00001)
+            || (dataTransform.mLongitude > dataTransform.cLeftTopLong && dataTransform.mLatitude > dataTransform.cRightTopLat + 0.00001)
+            || (dataTransform.mLongitude < dataTransform.cLeftTopLong - 0.00001 && dataTransform.mLatitude > dataTransform.cLeftTopLat + 0.00001))
 
     {
         data.mActivityType = -1;

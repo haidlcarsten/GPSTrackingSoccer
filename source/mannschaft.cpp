@@ -162,21 +162,36 @@ void Mannschaft::recalculateAll()
 
 void Mannschaft::showTeamMap(int aTimeStamp)
 {
-  double markersize = this->mSettings->value(SETTINGS_MARKERSIZE_PLAYERDATA).toDouble() * 2.0;
+  double markersize = this->mSettings->value(SETTINGS_MARKERSIZE_PLAYERDATA).toDouble();
 
   QScatterSeries *seriesdata = new QScatterSeries();
-  seriesdata->setName("");
   seriesdata->setMarkerShape(QScatterSeries::MarkerShapeCircle);
   seriesdata->setMarkerSize(markersize);
+  QChart *chart = new QChart();
 
   foreach (Spieler* player, this->mListSpieler)
   {
-    //auto data = player->getTransformedPlayerData(aTimeStamp);
-    auto data = player->getSynchedPlayerData(aTimeStamp);
+    auto data = player->getTransformedPlayerData(aTimeStamp);
     seriesdata->append(data.mLatitude, data.mLongitude);
+
+    QScatterSeries *seriesHeartRate = new QScatterSeries();
+
+    seriesHeartRate->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+    seriesHeartRate->setMarkerSize(markersize * 2.0);
+    seriesHeartRate->append(data.mLatitude, data.mLongitude);
+
+    if(data.mHeartRate >= 160.0)
+      seriesHeartRate->setColor(QColor(255, 0, 0)); // red
+    else if((data.mHeartRate < 160.0) && (data.mHeartRate >= 120.0))
+      seriesHeartRate->setColor(QColor(255, 102, 0)); // orange
+    else if((data.mHeartRate < 120.0) && (data.mHeartRate >= 90.0))
+      seriesHeartRate->setColor(QColor(255, 255, 0)); // yellow
+    else if(data.mHeartRate < 90.0)
+      seriesHeartRate->setColor(QColor(51, 255,0)); // green
+
+    chart->addSeries(seriesHeartRate);
   }
 
-  QChart *chart = new QChart();
   chart->addSeries(seriesdata);
 
   chart->createDefaultAxes();
@@ -242,9 +257,6 @@ QWidget* Mannschaft::displaySpieler()
 
     // connect to change the playernumber
     connect(edPlayerNumber, &QLineEdit::textChanged, person, &Spieler::setPlayerNumber);
-
-//    if(this->mMainWindow)
-//      connect(edName, &QLineEdit::editingFinished, this->mMainWindow, &MainWindow::reDrawSpielerList);
   }
 
 
