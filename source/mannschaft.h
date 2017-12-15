@@ -156,6 +156,12 @@ public:
    */
   int getMaximumTimeStamp();
 
+  /**
+   * @brief recalculateAll
+   * calculates all values new
+   */
+  void recalculateAll();
+
 signals:
   /**
    * @brief playersChanged

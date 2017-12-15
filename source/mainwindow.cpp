@@ -163,6 +163,9 @@ void MainWindow::showSettingsDialog()
 {
   SettingsDialog dlg;
   dlg.exec();
+
+  this->mMannschaftHeim.recalculateAll();
+  this->mMannschaftGegner.recalculateAll();
 }
 
 void MainWindow::loadSettings()
