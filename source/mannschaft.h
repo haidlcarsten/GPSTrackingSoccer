@@ -55,13 +55,31 @@ public:
   void neueSpieler(QStringList aPfade);
 
   /**
-   * @brief setChartWidget
+   * @brief setPlayerDataTab
    * a widget to display the data
    *
    * @param aWidget
    * a widget to display
    */
-  void setChartWidget(ChartWidget* aWidget) {this->mChartWidget = aWidget;}
+  void setPlayerDataTab(ChartWidget* aWidget) {this->mPlayerDataTab = aWidget;}
+
+  /**
+   * @brief setTeamDataTab
+   * a widget to display the data
+   *
+   * @param aWidget
+   * a widget to display
+   */
+  void setTeamDataTab(ChartWidget* aWidget) {this->mTeamDataTab = aWidget;}
+
+  /**
+   * @brief setHeatmapTab
+   * a widget to display the data
+   *
+   * @param aWidget
+   * a widget to display
+   */
+  void setHeatmapTab(ChartWidget* aWidget) {this->mHeatmapTab = aWidget;}
 
   /**
    * @brief setSlider
@@ -129,6 +147,15 @@ public:
    */
   void calcSynchPoint();
 
+  /**
+   * @brief getMaximumTimeStamp
+   * determine the maximum timestamp of all players
+   *
+   * @return
+   * maximum timestamp
+   */
+  int getMaximumTimeStamp();
+
 signals:
   /**
    * @brief playersChanged
@@ -138,12 +165,24 @@ signals:
 
 public slots:
 
+  /**
+   * @brief showTeamMap
+   * show all player on the map to an specific timestamp
+   *
+   * @param aTimeStamp
+   * defined timestamp
+   */
+  void showTeamMap(int aTimeStamp);
+
 private:
 //---------- member-variable ----------
   MainWindow* mMainWindow = NULL;
+  QSettings* mSettings;
 
   QList<Spieler*> mListSpieler;
-  ChartWidget* mChartWidget;
+  ChartWidget* mPlayerDataTab;
+  ChartWidget* mTeamDataTab;
+  ChartWidget* mHeatmapTab;
   QSlider* mSlider;
 
   QTime mSynchPoint;
@@ -161,6 +200,8 @@ private:
    * initalise the team
    */
   void initTeam();
+
+  void displayAllPlayerData();
 
 };
 

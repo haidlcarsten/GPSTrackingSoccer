@@ -171,6 +171,63 @@ public:
    */
   void calcSynchTime(QTime aSynchTime);
 
+  /**
+   * @brief generatePlayerDataWidget
+   * creates a basic widget for the player
+   *
+   * @return
+   * widget with the playerData
+   */
+  QWidget*  generatePlayerDataWidget();
+
+
+  int getPlayerNumber();
+
+  /**
+   * @brief getTransformedPlayerData
+   * return a transformed playerData
+   *
+   * @param aTime
+   * timestamp
+   *
+   * @return
+   * transformed data
+   */
+  parsedData getTransformedPlayerData(int aTime);
+
+  /**
+   * @brief getSynchedPlayerData
+   * return a synched playerdata
+   *
+   * @param aTime
+   * timestamp
+   *
+   * @return
+   * synched data
+   */
+  parsedData getSynchedPlayerData(int aTime);
+
+  /**
+   * @brief getPlayerData
+   * return a playerdata
+   *
+   * @param aTime
+   * timestamp
+   *
+   * @return
+   * data
+   */
+  parsedData getPlayerData(int aTime);
+
+  /**
+   * @brief getMaximumTimestamp
+   * the last timestamp
+   *
+   * @return
+   * number of the last timestamp
+   */
+  int getMaximumTimestamp();
+
 signals:
 
 public slots:
@@ -201,12 +258,22 @@ public slots:
    */
   void setPlayerName(QString aText);
 
+  /**
+   * @brief setPlayerNumber
+   * set the new player number
+   *
+   * @param aText
+   * new Number
+   */
+  void setPlayerNumber(QString aText);
+
 private:
   //---------- member-variable ----------
    QSettings* mSettings;
    QString mPfad;
    QString mFilename;
    QString mSpielerName;
+   int mSpielerNummer;
    ChartWidget* mChartWidget;
    QWidget* mPlayerCoordWidget;
    QSlider* mSlider;
@@ -231,21 +298,6 @@ private:
 //---------- private auxiliary-functions ----------
 
    /**
-    * @brief setSliderValues
-    * set values to our slider
-    *
-    * @param aMin
-    * minimum-value
-    *
-    * @param aMax
-    * maximum-value
-    *
-    * @param aValue
-    * value to set
-    */
-   void setSliderValues(int aMin, int aMax, int aValue);
-
-   /**
     * @brief synchPlayerData
     * synchronise the playerData with the internal synchtime
     * all Data befor the synch-time will be ignored
@@ -253,16 +305,10 @@ private:
    void synchPlayerData();
 
    /**
-    * @brief generatePlayerDataWidget
-    * creates a basic widget for the player
-    *
-    * @return
-    * widget with the playerData
+    * @brief transfromPlayerData
+    * transforms the data
     */
-   QWidget*  generatePlayerDataWidget();
-
-
-    void transfromPlayerData();
+   void transfromPlayerData();
 
 };
 

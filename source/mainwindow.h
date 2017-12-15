@@ -110,6 +110,8 @@ private:
    * settings will be loaded
    */
   void loadSettings();
+
+  void determineSliderRange();
 };
 
 #endif // MAINWINDOW_H

@@ -17,19 +17,34 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->dockWidgetHeim->setWindowTitle(MW_TEAM_HOME_DOCK);
   ui->dockWidgetGegner->setWindowTitle(MW_TEAM_ENEMY_DOCK);
 
+  ui->tabWidget->setTabText(0, MW_TAB_PLAYER_DATA);
+  ui->tabWidget->setTabText(1, MW_TAB_TEAM_DATA_HOME);
+  ui->tabWidget->setTabText(2, MW_TAB_TEAM_DATA_ENEMY);
+  ui->tabWidget->setTabText(3, MW_TAB_HEATMAP);
+
+  // show always the first one
+  ui->tabWidget->setCurrentIndex(0);
+
   this->mMannschaftHeim.setUI(this);
   this->mMannschaftGegner.setUI(this);
 
-  this->mMannschaftHeim.setChartWidget(ui->widget);
+  this->mMannschaftHeim.setPlayerDataTab(ui->tabPlayerData);
+  this->mMannschaftHeim.setTeamDataTab(ui->tabTeamHomeData);
+  this->mMannschaftHeim.setHeatmapTab(ui->tabHeatmap);
   this->mMannschaftHeim.setSlider(ui->horizontalSlider);
 
-  this->mMannschaftGegner.setChartWidget(ui->widget);
+  this->mMannschaftGegner.setPlayerDataTab(ui->tabPlayerData);
+  this->mMannschaftGegner.setTeamDataTab(ui->tabTeamEnemyData);
+  this->mMannschaftGegner.setHeatmapTab(ui->tabHeatmap);
   this->mMannschaftGegner.setSlider(ui->horizontalSlider);
 
   createMenusAndActions();
 
   connect(&mMannschaftHeim, &Mannschaft::playersChanged, this, &MainWindow::reDrawSpielerList);
   connect(&mMannschaftGegner, &Mannschaft::playersChanged, this, &MainWindow::reDrawSpielerList);
+
+  connect(ui->horizontalSlider, &QSlider::valueChanged, &mMannschaftHeim, &Mannschaft::showTeamMap);
+  connect(ui->horizontalSlider, &QSlider::valueChanged, &mMannschaftGegner, &Mannschaft::showTeamMap);
 
   loadSettings();
 }
@@ -75,6 +90,9 @@ void MainWindow::showFileOpenDialogMannschaftHeim()
   QStringList fileNames = this->showFileOpenDialog();
 
   this->mMannschaftHeim.neueSpieler(fileNames);
+
+  this->determineSliderRange();
+  this->mMannschaftHeim.showTeamMap(0);
 }
 
 void MainWindow::showFileOpenDialogMannschaftGegner()
@@ -82,6 +100,9 @@ void MainWindow::showFileOpenDialogMannschaftGegner()
   QStringList fileNames = this->showFileOpenDialog();
 
   this->mMannschaftGegner.neueSpieler(fileNames);
+
+  this->determineSliderRange();
+  this->mMannschaftGegner.showTeamMap(0);
 }
 
 void MainWindow::showFileOpenDialogAddPlayer()
@@ -116,10 +137,10 @@ void MainWindow::showFileOpenDialogAddPlayer()
 void MainWindow::reDrawSpielerList()
 {
   auto  widget = this->mMannschaftHeim.displaySpieler();
-  ui->dockWidgetContentsHeim->setChartWidget(widget);
+  ui->dockWidgetContentsHeim->setWidget(widget);
 
   widget = this->mMannschaftGegner.displaySpieler();
-  ui->dockWidgetContentsGegner->setChartWidget(widget);
+  ui->dockWidgetContentsGegner->setWidget(widget);
 }
 
 void MainWindow::showHelpMenuDialog()
@@ -163,4 +184,19 @@ void MainWindow::loadSettings()
 
     this->showSettingsDialog();
   }
+}
+
+void MainWindow::determineSliderRange()
+{
+  int maxHome = this->mMannschaftHeim.getMaximumTimeStamp();
+  int maxEnemy = this->mMannschaftGegner.getMaximumTimeStamp();
+
+  if(maxHome > maxEnemy)
+    ui->horizontalSlider->setRange(0, maxHome);
+  else
+    ui->horizontalSlider->setRange(0, maxEnemy);
+
+  ui->horizontalSlider->blockSignals(true);
+  ui->horizontalSlider->setValue(0);
+  ui->horizontalSlider->blockSignals(false);
 }

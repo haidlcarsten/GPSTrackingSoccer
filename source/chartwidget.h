@@ -39,7 +39,7 @@ public:
    * @param aWidget
    * widget which is to place
    */
-  void setChartWidget(QWidget* aWidget);
+  void setWidget(QWidget* aWidget);
 
   /**
    * @brief removeChartWidget
@@ -48,7 +48,7 @@ public:
    * @param aWidget
    * widget which will be removed
    */
-  void removeChartWidget(QWidget* aWidget);
+  void removeWidget(QWidget* aWidget);
 
   /**
    * @brief getDefaultWidget
@@ -57,8 +57,16 @@ public:
    * @return
    * default-widget
    */
-  QWidget* getDefaultWidget() {return &mEmptyWidget;}
+  QWidget* getDefaultWidget() {return this->mEmptyWidget;}
 
+  /**
+   * @brief setDefaultWidget
+   * sets the holder for an default-widget otherwise it is an empty-widget
+   *
+   * @param aDefaultWidget
+   * new default-widget
+   */
+  void setDefaultWidget(QWidget* aDefaultWidget){this->mEmptyWidget = aDefaultWidget;}
 private:
     // knowing the last shown widget
     QWidget *mWidget;
@@ -68,7 +76,7 @@ private:
     // changeing the different Widgets
     QStackedWidget mStack;
     // basic default widget
-    QWidget mEmptyWidget;
+    QWidget* mEmptyWidget;
 };
 
 #endif // CHARTWIDGET_H

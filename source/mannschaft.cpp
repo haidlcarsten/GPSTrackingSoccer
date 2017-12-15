@@ -7,10 +7,19 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QDebug>
+#include <QtCharts>
 #include "mainwindow.h"
 
 Mannschaft::Mannschaft(QObject *parent) : QObject(parent)
 {
+#ifdef Q_OS_LINUX
+  this->mSettings = new QSettings("." + QApplication::applicationDirPath().left(1) + SETTINGS_FILE_PATH, QSettings::IniFormat);
+#endif
+
+#ifdef Q_OS_WIN
+  this->mSettings = new QSettings(QApplication::applicationDirPath().left(1) + SETTINGS_FILE_PATH, QSettings::IniFormat);
+#endif
+
   this->mAvgHeartrate = 0;
   this->mAvgSpeed = 0;
 }
@@ -18,8 +27,9 @@ Mannschaft::Mannschaft(QObject *parent) : QObject(parent)
 void Mannschaft::neuerSpieler(QString aPfad)
 {
   Spieler* person = new Spieler(aPfad);
-  person->setChartWidget(this->mChartWidget);
+  person->setChartWidget(this->mPlayerDataTab);
   person->setSlider(this->mSlider);
+  person->setPlayerNumber(QString::number(this->mListSpieler.count() + 1));
 
   this->mListSpieler.append(person);
 
@@ -34,6 +44,23 @@ void Mannschaft::initTeam()
   this->calcAverageSpeed();
   this->calcMeanCornePoint();
   this->calcSynchPoint();
+
+  this->displayAllPlayerData();
+}
+
+void Mannschaft::displayAllPlayerData()
+{
+  QWidget* widget = new QWidget;
+  QFormLayout* lyForm = new QFormLayout;
+  foreach (Spieler* player, this->mListSpieler)
+    lyForm->addRow(player->generatePlayerDataWidget());
+
+  widget->setLayout(lyForm);
+
+  this->mPlayerDataTab->setWidget(widget);
+
+  // always renew the default-widget
+  this->mPlayerDataTab->setDefaultWidget(widget);
 }
 
 void Mannschaft::neueSpieler(QStringList aPfade)
@@ -109,6 +136,47 @@ void Mannschaft::calcSynchPoint()
 
 }
 
+int Mannschaft::getMaximumTimeStamp()
+{
+  int result = 0;
+
+  foreach (Spieler* player, this->mListSpieler)
+  {
+    int max = player->getMaximumTimestamp();
+    if(max > result)
+      result = max;
+  }
+
+  return result;
+}
+
+void Mannschaft::showTeamMap(int aTimeStamp)
+{
+  double markersize = this->mSettings->value(SETTINGS_MARKERSIZE_PLAYERDATA).toDouble() * 2.0;
+
+  QScatterSeries *seriesdata = new QScatterSeries();
+  seriesdata->setName("");
+  seriesdata->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+  seriesdata->setMarkerSize(markersize);
+
+  foreach (Spieler* player, this->mListSpieler)
+  {
+    //auto data = player->getTransformedPlayerData(aTimeStamp);
+    auto data = player->getSynchedPlayerData(aTimeStamp);
+    seriesdata->append(data.mLatitude, data.mLongitude);
+  }
+
+  QChart *chart = new QChart();
+  chart->addSeries(seriesdata);
+
+  chart->createDefaultAxes();
+  chart->setDropShadowEnabled(false);
+
+  QChartView *chartView = new QChartView(chart);
+
+  this->mTeamDataTab->setWidget(chartView);
+}
+
 double Mannschaft::getTeamAverageSpeed()
 {
   return this->mAvgSpeed;
@@ -136,22 +204,34 @@ QWidget* Mannschaft::displaySpieler()
   //add every player
   foreach (Spieler* person, this->mListSpieler)
   {
+    QHBoxLayout* lyPerson = new QHBoxLayout;
     // element, we can react to
-    QCheckBox* cbSelect = new QCheckBox(person->getPlayerName(), NULL);
+    QRadioButton* cbSelect = new QRadioButton(person->getPlayerName(), NULL);
     cbSelect->setToolTip(TEAM_PLAYER_INDIVIDUAL_TOOLTIP + person->getPlayerName());
     cbSelect->setChecked(false);
 
     QLineEdit* edName = new QLineEdit();
     edName->setText(person->getPlayerName());
 
+    QLineEdit* edPlayerNumber = new QLineEdit();
+    edPlayerNumber->setText(QString::number(person->getPlayerNumber()));
+    edPlayerNumber->setValidator(new QIntValidator(0, INT_MAX));
+
     // add the elements to the widget
-    lyGbrTeam->addRow(cbSelect, edName);
+    lyPerson->addWidget(cbSelect);
+    lyPerson->addWidget(edName);
+    lyPerson->addWidget(edPlayerNumber);
+
+    lyGbrTeam->addRow(lyPerson);
 
     // connect to handle the event from the checkbox
-    connect(cbSelect, &QCheckBox::clicked, person, &Spieler::displayData);
+    connect(cbSelect, &QRadioButton::toggled, person, &Spieler::displayData);
 
     // connect to change the name
     connect(edName, &QLineEdit::textChanged, person, &Spieler::setPlayerName);
+
+    // connect to change the playernumber
+    connect(edPlayerNumber, &QLineEdit::textChanged, person, &Spieler::setPlayerNumber);
 
 //    if(this->mMainWindow)
 //      connect(edName, &QLineEdit::editingFinished, this->mMainWindow, &MainWindow::reDrawSpielerList);

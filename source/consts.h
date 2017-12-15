@@ -78,5 +78,10 @@
 
 #define MW_TEAM_HOME_DOCK "Heim-Mannschaft"
 #define MW_TEAM_ENEMY_DOCK "Gegner-Mannschaft"
+
+#define MW_TAB_PLAYER_DATA "Spielerdaten"
+#define MW_TAB_TEAM_DATA_HOME "Heim-Mannschaft"
+#define MW_TAB_TEAM_DATA_ENEMY "Gegner-Mannschaft"
+#define MW_TAB_HEATMAP "Heatmap"
 #endif // CONSTS
 

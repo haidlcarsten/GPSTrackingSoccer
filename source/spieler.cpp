@@ -107,7 +107,7 @@ float Spieler::getHeartRate()
 void Spieler::setSlider(QSlider *aSlider)
 {
   this->mSlider = aSlider;
-  connect(this->mSlider, &QSlider::valueChanged, this, &Spieler::displayFrameData);
+  connect(this->mSlider, &QSlider::valueChanged, this, &Spieler::displayData);
 }
 
 void Spieler::displayData(bool aDisplay)
@@ -121,34 +121,41 @@ void Spieler::displayData(bool aDisplay)
     QGridLayout* lyForm = new QGridLayout;
 
     auto datawidget = this->generatePlayerDataWidget();
-    this->displayFrameData(this->mSlider->value());
+
+    int skip = this->mSettings->value(SETTINGS_SKIP_PLAYERDATA).toInt();
+    double markersize = this->mSettings->value(SETTINGS_MARKERSIZE_PLAYERDATA).toDouble();
+    this->transfromPlayerData();
+
+    QScatterSeries *seriesdata = new QScatterSeries();
+    seriesdata->setName(this->getPlayerName());
+    seriesdata->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+    seriesdata->setMarkerSize(markersize);
+
+    for(int i = 0; i < this->mSlider->value(); i+= skip+1)
+    {
+      parsedData data = this->mTransformedPlayerData.value(i);
+      seriesdata->append(data.mLatitude, data.mLongitude);
+    }
+
+    QChart *chart = new QChart();
+    chart->addSeries(seriesdata);
+
+    chart->setTitle(this->getPlayerName() + "Route");
+    chart->createDefaultAxes();
+    chart->setDropShadowEnabled(false);
+
+    QChartView *chartView = new QChartView(chart);
 
     lyForm->addWidget(datawidget, 0, 0);
-
-    if(this->mPlayerCoordWidget)
-      lyForm->addWidget(this->mPlayerCoordWidget, 1, 0);
+    lyForm->addWidget(chartView, 1, 0);
 
     widgetToDisplay = new QWidget;
     widgetToDisplay->setLayout(lyForm);
-
-    this->setSliderValues(this->mSynchPlayerData.firstKey(), this->mSynchPlayerData.lastKey(), 0);
   }
   else
-  {
     widgetToDisplay = this->mChartWidget->getDefaultWidget();
-    this->setSliderValues(0, 0, 0);
-  }
 
-  this->mChartWidget->setChartWidget(widgetToDisplay);
-}
-
-void Spieler::setSliderValues(int aMin, int aMax, int aValue)
-{
-  this->mSlider->setMinimum(aMin);
-  this->mSlider->setMaximum(aMax);
-  this->blockSignals(true);
-  this->mSlider->setValue(aValue);
-  this->blockSignals(false);
+  this->mChartWidget->setWidget(widgetToDisplay);
 }
 
 void Spieler::synchPlayerData()
@@ -221,6 +228,35 @@ QWidget *Spieler::generatePlayerDataWidget()
   return result;
 }
 
+int Spieler::getPlayerNumber()
+{
+  return this->mSpielerNummer;
+}
+
+parsedData Spieler::getTransformedPlayerData(int aTime)
+{
+  if(this->mDataIsTransformed)
+    return this->mTransformedPlayerData.value(aTime);
+
+  this->transfromPlayerData();
+  return this->mTransformedPlayerData.value(aTime);
+}
+
+parsedData Spieler::getSynchedPlayerData(int aTime)
+{
+  return this->mSynchPlayerData.value(aTime);
+}
+
+parsedData Spieler::getPlayerData(int aTime)
+{
+  return this->mAllPlayerData.value(aTime);
+}
+
+int Spieler::getMaximumTimestamp()
+{
+  return this->mSynchPlayerData.count();
+}
+
 void Spieler::transfromPlayerData()
 {
   if(this->mDataIsTransformed)
@@ -232,7 +268,8 @@ void Spieler::transfromPlayerData()
   double bottomrightLong = this->mSettings->value(SETTINGS_COORDINATES_BOTTOM_RIGHT_LONGITUDE).toDouble();
   double bottomrightLat = this->mSettings->value(SETTINGS_COORDINATES_BOTTEM_RIGHT_LATITUDE).toDouble();
 
-  double ratio = qAtan2((bottomrightLong - bottomLeftLong), (bottomrightLat - bottomLeftLat));
+  double rad = qAtan2((bottomrightLong - bottomLeftLong), (bottomrightLat - bottomLeftLat));
+  double degree = rad * (180.0/M_PI);
 
   // transform the data
   foreach (int time, this->mSynchPlayerData.keys())
@@ -252,11 +289,11 @@ void Spieler::transfromPlayerData()
     dataTransform.mSpeed        = data.mSpeed;
 
     // transform the coordinates
-    double coordLatitude    = (data.mLatitude - bottomLeftLat );
+    double coordLatitude    = (data.mLatitude - bottomLeftLat);
     double coordLongitude   = (data.mLongitude - bottomLeftLong);
 
-    dataTransform.mLatitude     = coordLatitude * qCos(ratio) - coordLongitude * qSin(ratio) ;
-    dataTransform.mLongitude    = coordLongitude * qCos(ratio) + coordLatitude * qSin(ratio);
+    dataTransform.mLatitude     = coordLatitude * qCos(degree) - coordLongitude * qSin(degree) ;
+    dataTransform.mLongitude    = coordLongitude * qCos(degree) + coordLatitude * qSin(degree);
 
     this->mTransformedPlayerData.insert(time, dataTransform);
   }
@@ -266,43 +303,18 @@ void Spieler::transfromPlayerData()
 
 void Spieler::displayFrameData(int aTime)
 {
-
-  int skip = this->mSettings->value(SETTINGS_SKIP_PLAYERDATA).toInt();
-  double markersize = this->mSettings->value(SETTINGS_MARKERSIZE_PLAYERDATA).toDouble();
-  this->transfromPlayerData();
-
-
-  QScatterSeries *seriesdata = new QScatterSeries();
-  seriesdata->setName(this->getPlayerName());
-  seriesdata->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-  seriesdata->setMarkerSize(markersize);
-
-
-  for(int i = 0; i < aTime; i+= skip+1)
-  {
-    parsedData data = this->mTransformedPlayerData.value(i);
-
-    seriesdata->append(data.mLatitude, data.mLongitude);
-  }
-
-
-  QChart *chart = new QChart();
-  chart->addSeries(seriesdata);
-
-  chart->setTitle("Simple scatterchart example");
-  chart->createDefaultAxes();
-  chart->setDropShadowEnabled(false);
-
-  QChartView *chartView = new QChartView(chart);
-
-  this->mPlayerCoordWidget = chartView;
-
-  this->mChartWidget->setChartWidget(this->mPlayerCoordWidget);
+  Q_UNUSED(aTime)
+  this->displayData(true);
 }
 
 void Spieler::setPlayerName(QString aText)
 {
   this->mSpielerName = aText;
+}
+
+void Spieler::setPlayerNumber(QString aText)
+{
+  this->mSpielerNummer = aText.toInt();
 }
 
 QTime Spieler::getSynchTime() const
@@ -367,7 +379,6 @@ void Spieler::parseData()
 
     while(!stream.atEnd())
     {
-
      line = stream.readLine();
      if(firstline)
      {
@@ -391,8 +402,8 @@ void Spieler::parseData()
      data.mDistance   = elements[3].toDouble();
      data.mSpeed      = elements[4].toDouble();
      data.mCalories   = elements[5].toDouble();
-     data.mLatitude     = elements[6].toDouble();
-     data.mLongitude     = elements[7].toDouble();
+     data.mLatitude   = elements[6].toDouble();
+     data.mLongitude  = elements[7].toDouble();
      data.mElevation  = elements[8].toDouble();
      data.mHeartRate  = elements[9].toInt();
      data.mCycles     = elements[10].toInt();

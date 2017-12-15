@@ -3,19 +3,21 @@
 ChartWidget::ChartWidget(QWidget *parent) : QWidget(parent),
   mTopLayout(this)
 {
+  this->mEmptyWidget = new QWidget(this);
   mTopLayout.setContentsMargins(0, 0, 0, 0);
   mTopLayout.addWidget(&mStack);
 
   // Create and add the empty widget. This widget is shown when no item is selected.
-  mStack.addWidget(&mEmptyWidget);
-  mStack.setCurrentWidget(&mEmptyWidget);
+  mStack.addWidget(mEmptyWidget);
+  mStack.setCurrentWidget(mEmptyWidget);
+
 }
 
 ChartWidget::~ChartWidget()
 {
 }
 
-void ChartWidget::setChartWidget(QWidget *aWidget)
+void ChartWidget::setWidget(QWidget *aWidget)
 {
   if (aWidget)
   {
@@ -32,11 +34,11 @@ void ChartWidget::setChartWidget(QWidget *aWidget)
   else
   {
     // Show the empty widget in case of aWidget was not defined
-    mStack.setCurrentWidget(&mEmptyWidget);
+    mStack.setCurrentWidget(mEmptyWidget);
   }
 }
 
-void ChartWidget::removeChartWidget(QWidget* aWidget)
+void ChartWidget::removeWidget(QWidget* aWidget)
 {
   if (aWidget)
     this->mStack.removeWidget(aWidget);
