@@ -134,7 +134,8 @@ void Spieler::displayData(bool aDisplay)
     for(int i = 0; i < this->mSlider->value(); i+= skip+1)
     {
       parsedData data = this->mTransformedPlayerData.value(i);
-      seriesdata->append(data.mLatitude, data.mLongitude);
+      if(data.mActivityType != -1)
+        seriesdata->append(data.mLatitude, data.mLongitude);
     }
 
     QChart *chart = new QChart();
@@ -254,7 +255,15 @@ parsedData Spieler::getPlayerData(int aTime)
 
 int Spieler::getMaximumTimestamp()
 {
-  return this->mSynchPlayerData.count();
+    return this->mSynchPlayerData.count();
+}
+
+void Spieler::recalculate()
+{
+    this->calcAverageSpeed();
+    this->calcAverageHeartRate();
+    this->mDataIsTransformed = false;
+    this->transfromPlayerData();
 }
 
 void Spieler::transfromPlayerData()
@@ -267,6 +276,12 @@ void Spieler::transfromPlayerData()
 
   double bottomrightLong = this->mSettings->value(SETTINGS_COORDINATES_BOTTOM_RIGHT_LONGITUDE).toDouble();
   double bottomrightLat = this->mSettings->value(SETTINGS_COORDINATES_BOTTEM_RIGHT_LATITUDE).toDouble();
+
+  double toprightLong = this->mSettings->value(SETTINGS_COORDINATES_TOP_RIGHT_LONGITUDE).toDouble();
+  double toprightLat = this->mSettings->value(SETTINGS_COORDINATES_TOP_RIGHT_LATITUDE).toDouble();
+
+  double topleftLong = this->mSettings->value(SETTINGS_COORDINATES_TOP_LEFT_LONGITUDE).toDouble();
+  double topleftLat = this->mSettings->value(SETTINGS_COORDINATES_TOP_LEFT_LATITUDE).toDouble();
 
   double rad = qAtan2((bottomrightLong - bottomLeftLong), (bottomrightLat - bottomLeftLat));
   double degree = rad * (180.0/M_PI);
@@ -288,12 +303,39 @@ void Spieler::transfromPlayerData()
     dataTransform.mLapNumber    = data.mLapNumber;
     dataTransform.mSpeed        = data.mSpeed;
 
+
+    //calculate transformed corner point
+    dataTransform.cLeftBottomlat     = bottomLeftLat * qCos(degree) - bottomLeftLong * qSin(degree) ;
+    dataTransform.cLeftBottomlong    = bottomLeftLong * qCos(degree) + bottomLeftLat * qSin(degree);
+    dataTransform.cLeftToplat        = topleftLat* qCos(degree) - topleftLong * qSin(degree) ;
+    dataTransform.cLeftToplong       = topleftLong * qCos(degree) + topleftLat * qSin(degree);
+    dataTransform.cRightBottomlat    = bottomrightLat * qCos(degree) - bottomrightLong * qSin(degree) ;
+    dataTransform.cRightBottomlong   = bottomrightLong * qCos(degree) + bottomrightLat * qSin(degree);
+    dataTransform.cRightToplat       = toprightLat * qCos(degree) - toprightLong * qSin(degree) ;
+    dataTransform.cRightToplong      = toprightLong * qCos(degree) + toprightLat * qSin(degree);
+
     // transform the coordinates
     double coordLatitude    = (data.mLatitude - bottomLeftLat);
     double coordLongitude   = (data.mLongitude - bottomLeftLong);
 
     dataTransform.mLatitude     = coordLatitude * qCos(degree) - coordLongitude * qSin(degree) ;
     dataTransform.mLongitude    = coordLongitude * qCos(degree) + coordLatitude * qSin(degree);
+
+    //detect player outside of the field
+
+    if ((dataTransform.mLatitude < dataTransform.cLeftBottomlat-0.00001 && dataTransform.mLongitude > dataTransform.cLeftBottomlong )
+            || (dataTransform.mLongitude < dataTransform.cLeftBottomlong-0.00001 && dataTransform.mLatitude > dataTransform.cLeftBottomlat )
+            || (dataTransform.mLatitude < dataTransform.cLeftBottomlat-0.00001 && dataTransform.mLongitude < dataTransform.cLeftBottomlong-0.00001 )
+            || (dataTransform.mLongitude > dataTransform.cRightBottomlong + 0.00001 && dataTransform.mLatitude < dataTransform.cRightBottomlat-0.00001 )
+            || (dataTransform.mLongitude > dataTransform.cRightBottomlong + 0.00001 && dataTransform.mLatitude < dataTransform.cRightToplat )
+            || (dataTransform.mLongitude > dataTransform.cRightToplong + 0.00001 && dataTransform.mLatitude > dataTransform.cRightToplat + 0.00001)
+            || (dataTransform.mLongitude > dataTransform.cLeftToplong && dataTransform.mLatitude > dataTransform.cRightToplat + 0.00001)
+            || (dataTransform.mLongitude < dataTransform.cLeftToplong - 0.00001 && dataTransform.mLatitude > dataTransform.cLeftToplat + 0.00001))
+
+    {
+        data.mActivityType = -1;
+    }
+
 
     this->mTransformedPlayerData.insert(time, dataTransform);
   }

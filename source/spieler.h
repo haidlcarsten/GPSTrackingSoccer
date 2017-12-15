@@ -228,6 +228,8 @@ public:
    */
   int getMaximumTimestamp();
 
+  void recalculate();
+
 signals:
 
 public slots:

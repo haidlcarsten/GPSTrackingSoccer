@@ -20,6 +20,15 @@ struct parsedData
     double mElevation;
     int mHeartRate;
     int mCycles;
+
+    double cRightBottomlong = 0.0;
+    double cRightBottomlat = 0.0;
+    double cRightToplong = 0.0;
+    double cRightToplat = 0.0;
+    double cLeftBottomlong = 0.0;
+    double cLeftBottomlat = 0.0;
+    double cLeftToplong = 0.0;
+    double cLeftToplat = 0.0;
 };
 
 
