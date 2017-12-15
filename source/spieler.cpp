@@ -283,8 +283,9 @@ void Spieler::transfromPlayerData()
   double topleftLong = this->mSettings->value(SETTINGS_COORDINATES_TOP_LEFT_LONGITUDE).toDouble();
   double topleftLat = this->mSettings->value(SETTINGS_COORDINATES_TOP_LEFT_LATITUDE).toDouble();
 
-  double rad = qAtan2((bottomrightLong - bottomLeftLong), (bottomrightLat - bottomLeftLat));
-  double degree = rad * (180.0/M_PI);
+  double rad = qAtan2((bottomrightLat - bottomLeftLat), (bottomrightLong - bottomLeftLong));
+  double ratio = rad * (180.0/M_PI);
+  double degree = 0.0;
 
   // transform the data
   foreach (int time, this->mSynchPlayerData.keys())
@@ -305,21 +306,57 @@ void Spieler::transfromPlayerData()
 
 
     //calculate transformed corner point
-    dataTransform.cLeftBottomlat     = bottomLeftLat * qCos(degree) - bottomLeftLong * qSin(degree) ;
-    dataTransform.cLeftBottomlong    = bottomLeftLong * qCos(degree) + bottomLeftLat * qSin(degree);
-    dataTransform.cLeftToplat        = topleftLat* qCos(degree) - topleftLong * qSin(degree) ;
-    dataTransform.cLeftToplong       = topleftLong * qCos(degree) + topleftLat * qSin(degree);
-    dataTransform.cRightBottomlat    = bottomrightLat * qCos(degree) - bottomrightLong * qSin(degree) ;
-    dataTransform.cRightBottomlong   = bottomrightLong * qCos(degree) + bottomrightLat * qSin(degree);
-    dataTransform.cRightToplat       = toprightLat * qCos(degree) - toprightLong * qSin(degree) ;
-    dataTransform.cRightToplong      = toprightLong * qCos(degree) + toprightLat * qSin(degree);
+    //vector to corner point
 
-    // transform the coordinates
-    double coordLatitude    = (data.mLatitude - bottomLeftLat);
-    double coordLongitude   = (data.mLongitude - bottomLeftLong);
+    double cornerLeftTopLat = (topleftLat - bottomLeftLat);
+    double cornerLeftTopLong = (topleftLong - bottomLeftLong);
+    double cornerRightTopLat = (toprightLat - bottomLeftLat);
+    double cornerRightTopLong = (toprightLong - bottomLeftLong);
+    double cornerRightBottomLat = (bottomrightLat - bottomLeftLat);
+    double cornerRightBottomLong = (bottomrightLong - bottomLeftLong);
 
-    dataTransform.mLatitude     = coordLatitude * qCos(degree) - coordLongitude * qSin(degree) ;
-    dataTransform.mLongitude    = coordLongitude * qCos(degree) + coordLatitude * qSin(degree);
+    //rotate in positive direction
+    if (ratio < 0)
+    {
+        degree = qAbs(ratio);
+        dataTransform.cLeftBottomLat     = bottomLeftLat; // reference point y_value
+        dataTransform.cLeftBottomLong    = bottomLeftLong; // reference point x_value
+        dataTransform.cLeftTopLat        = (cornerLeftTopLat* qCos(degree) - cornerLeftTopLong * qSin(degree)) + bottomLeftLat ;
+        dataTransform.cLeftTopLong       = (cornerLeftTopLong * qCos(degree) + cornerLeftTopLat * qSin(degree)) + bottomLeftLong;
+        dataTransform.cRightBottomLat    = (cornerRightBottomLat * qCos(degree) - cornerRightBottomLong * qSin(degree)) + bottomLeftLat ;
+        dataTransform.cRightBottomLong   = (cornerRightBottomLong * qCos(degree) + cornerRightBottomLat * qSin(degree)) + bottomLeftLong;
+        dataTransform.cRightTopLat       = (cornerRightTopLat * qCos(degree) - cornerRightTopLong * qSin(degree)) + bottomLeftLat ;
+        dataTransform.cRightTopLong      = (cornerRightTopLong * qCos(degree) + cornerRightTopLat * qSin(degree)) + bottomLeftLong;
+
+        // transform the coordinates
+        double coordLatitude    = (data.mLatitude - bottomLeftLat);
+        double coordLongitude   = (data.mLongitude - bottomLeftLong);
+
+        dataTransform.mLatitude     = (coordLatitude * qCos(degree) - coordLongitude * qSin(degree)) +  bottomLeftLat ;
+        dataTransform.mLongitude    = (coordLongitude * qCos(degree) + coordLatitude * qSin(degree)) + bottomLeftLong;
+
+
+    }
+    else    //rotate in negative direction
+    {
+        degree = ratio;
+        dataTransform.cLeftBottomLat     = bottomLeftLat; // reference point y_value
+        dataTransform.cLeftBottomLong    = bottomLeftLong; // reference point x_value
+        dataTransform.cLeftTopLat        = (cornerLeftTopLat* qCos(degree) + cornerLeftTopLong * qSin(degree)) + bottomLeftLat ;
+        dataTransform.cLeftTopLong       = (cornerLeftTopLong * qCos(degree) - cornerLeftTopLat * qSin(degree)) + bottomLeftLong;
+        dataTransform.cRightBottomLat    = (cornerRightBottomLat * qCos(degree) + cornerRightBottomLong * qSin(degree)) + bottomLeftLat ;
+        dataTransform.cRightBottomLong   = (cornerRightBottomLong * qCos(degree) - cornerRightBottomLat * qSin(degree)) + bottomLeftLong;
+        dataTransform.cRightTopLat       = (cornerRightTopLat * qCos(degree) + cornerRightTopLong * qSin(degree)) + bottomLeftLat ;
+        dataTransform.cRightTopLong      = (cornerRightTopLong * qCos(degree) - cornerRightTopLat * qSin(degree)) + bottomLeftLong;
+
+        // transform the coordinates
+        double coordLatitude    = (data.mLatitude - bottomLeftLat);
+        double coordLongitude   = (data.mLongitude - bottomLeftLong);
+
+        dataTransform.mLatitude     = (coordLatitude * qCos(degree) + coordLongitude * qSin(degree)) +  bottomLeftLat ;
+        dataTransform.mLongitude    = (coordLongitude * qCos(degree) - coordLatitude * qSin(degree)) + bottomLeftLong;
+
+    }
 
     //detect player outside of the field
 

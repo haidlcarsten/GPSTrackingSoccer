@@ -21,14 +21,14 @@ struct parsedData
     int mHeartRate;
     int mCycles;
 
-    double cRightBottomlong = 0.0;
-    double cRightBottomlat = 0.0;
-    double cRightToplong = 0.0;
-    double cRightToplat = 0.0;
-    double cLeftBottomlong = 0.0;
-    double cLeftBottomlat = 0.0;
-    double cLeftToplong = 0.0;
-    double cLeftToplat = 0.0;
+    double cRightBottomLong = 0.0;
+    double cRightBottomLat = 0.0;
+    double cRightTopLong = 0.0;
+    double cRightTopLat = 0.0;
+    double cLeftBottomLong = 0.0;
+    double cLeftBottomLat = 0.0;
+    double cLeftTopLong = 0.0;
+    double cLeftTopLat = 0.0;
 };
 
 
