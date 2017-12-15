@@ -114,7 +114,7 @@ void MainWindow::showFileOpenDialogAddPlayer()
   msgBox.setDefaultButton(QMessageBox::Yes);
   msgBox.setButtonText(QMessageBox::Yes, BUTTON_TEXT_YES);
   msgBox.setButtonText(QMessageBox::No, BUTTON_TEXT_NO);
-  msgBox.setButtonText(QMessageBox::Abort, BUTTON_TEXT_Abort);
+  msgBox.setButtonText(QMessageBox::Abort, BUTTON_TEXT_ABORT);
   msgBox.setDefaultButton(QMessageBox::Yes);
 
   int ret = msgBox.exec();
@@ -163,6 +163,9 @@ void MainWindow::showSettingsDialog()
 {
   SettingsDialog dlg;
   dlg.exec();
+
+  this->mMannschaftHeim.recalculateAll();
+  this->mMannschaftGegner.recalculateAll();
 }
 
 void MainWindow::loadSettings()

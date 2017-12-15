@@ -150,6 +150,16 @@ int Mannschaft::getMaximumTimeStamp()
   return result;
 }
 
+void Mannschaft::recalculateAll()
+{
+  foreach (auto player, this->mListSpieler)
+    player->recalculate();
+
+  this->initTeam();
+
+  emit playersChanged();
+}
+
 void Mannschaft::showTeamMap(int aTimeStamp)
 {
   double markersize = this->mSettings->value(SETTINGS_MARKERSIZE_PLAYERDATA).toDouble() * 2.0;

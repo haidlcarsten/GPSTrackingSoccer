@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>493</width>
+    <height>408</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -107,26 +107,16 @@
      </layout>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="0">
     <widget class="QGroupBox" name="grbSkipPlayerData">
      <property name="title">
-      <string>GroupBox</string>
+      <string>Spielerdaten</string>
      </property>
      <layout class="QFormLayout" name="formLayout">
       <item row="0" column="0">
        <widget class="QLabel" name="lblSkipPlayerData">
         <property name="text">
-         <string>TextLabel</string>
+         <string>Wie viele Punkte sollen beim Zeichnen übersprungen werden:</string>
         </property>
        </widget>
       </item>
@@ -136,12 +126,41 @@
       <item row="1" column="0">
        <widget class="QLabel" name="lblMarkerSize">
         <property name="text">
-         <string>TextLabel</string>
+         <string>Wie groß sollen die Punkte gezeichnet werden:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="edMarkerSize"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QGroupBox" name="gbrFieldData">
+     <property name="title">
+      <string>Spielfelddaten</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblFieldDataTolerance">
+        <property name="text">
+         <string>Wie groß soll die Toleranz des Feldes sein: </string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="edFieldDataTolerance"/>
       </item>
      </layout>
     </widget>

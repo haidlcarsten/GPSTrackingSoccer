@@ -25,6 +25,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
   ui->edSkipPlayerData->setValidator(new QIntValidator(0, INT_MAX));
 
+  ui->edFieldDataTolerance->setValidator(new QDoubleValidator(0, 10, 2));
+
   //setting the correct tab-order
   QWidget::setTabOrder(ui->edCornerBottomLeftLatitude, ui->edCornerBottomLeftLongitude);
   QWidget::setTabOrder(ui->edCornerBottomLeftLongitude, ui->edCornerBottomRightLatitude);
@@ -57,6 +59,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
   ui->edCornerTopRightLatitude->setToolTip(STD_CORNER_TOP_RIGHT_LAT_TOOLTIP);
   ui->edCornerTopRightLongitude->setToolTip(STD_CORNER_TOP_RIGHT_LONG_TOOLTIP);
 
+  ui->edSkipPlayerData->setToolTip(STD_SKIP_PLAYERDATA_TOOLTIP);
+  ui->edMarkerSize->setToolTip(STD_SKIP_MARKERSIZE_TOOLTIP);
+  ui->edFieldDataTolerance->setToolTip(STD_FIELDDATA_TOLERANCE_TOOLTIP);
 #ifdef QT_DEBUG
   // if we have the debug and we dont have a config-file, we set default-values
   ui->edCornerBottomLeftLatitude->setText("50,5");
@@ -93,7 +98,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     ui->edSkipPlayerData->setText(QString::number(settings.value(SETTINGS_SKIP_PLAYERDATA, 2).toInt()));
     ui->edMarkerSize->setText(QString::number(settings.value(SETTINGS_MARKERSIZE_PLAYERDATA, 7.5).toDouble()));
+    ui->edFieldDataTolerance->setText(QString::number(settings.value(SETTINGS_TOLERANCE_FIELDDATA, 0).toDouble()));
   }
+
+  ui->gbrFieldData->setVisible(false);
 }
 
 SettingsDialog::~SettingsDialog()
@@ -165,6 +173,8 @@ void SettingsDialog::accept()
 
   settings.setValue(SETTINGS_SKIP_PLAYERDATA, ui->edSkipPlayerData->text().toInt());
   settings.setValue(SETTINGS_MARKERSIZE_PLAYERDATA, ui->edMarkerSize->text().replace(',',".").toDouble());
+
+  settings.setValue(SETTINGS_TOLERANCE_FIELDDATA, ui->edFieldDataTolerance->text().replace(',',".").toDouble());
 
   settings.sync();
 

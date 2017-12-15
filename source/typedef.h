@@ -52,5 +52,6 @@ struct parsedData
 
 #define SETTINGS_SKIP_PLAYERDATA "settings_skip_playerdata"
 #define SETTINGS_MARKERSIZE_PLAYERDATA "settings_markersize_playerdata"
+#define SETTINGS_TOLERANCE_FIELDDATA "settings_tolerance_fielddata"
 
 #endif // TYPEDEF_H

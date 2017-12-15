@@ -10,18 +10,17 @@
 #define APPLICATION_NAME_HELP "GPS Tracking Visualisation Hilfe"
 #define BUTTON_TEXT_YES "Ja"
 #define BUTTON_TEXT_NO "Nein"
-#define BUTTON_TEXT_Abort "Abbrechen"
-
+#define BUTTON_TEXT_ABORT "Abbrechen"
 
 
 // Settingsdialog
 #define STD_WINDOW_TITLE "Einstellungen"
 #define STD_GRBBOX_COORDINATES "Koordinaten"
 #define STD_GRBBOX_SKIP_PLAYERDATA "Spielerdaten"
-#define STD_LBL_SKIP_PLAYERDATA "Wie viele Punkte sollen beim Zeichnen übersprungen werden:"
-#define STD_LBL_MARKERSIZE_PLAYERDATA "Wie groß sollen die Punkte gezeichnet werden:"
-#define STD_LBL_LONGITUDE "Längengrad"
-#define STD_LBL_LATITUDE "Breitengrad"
+#define STD_GRBBOX_FIELDDATA "Spielfeld Daten"
+
+#define STD_LBL_LONGITUDE "Längengrad (longitude)"
+#define STD_LBL_LATITUDE "Breitengrad (latitude)"
 #define STD_LBL_CORNER_BOTTOM_LEFT "Ecke unten links:"
 #define STD_LBL_CORNER_BOTTOM_RIGHT "Ecke unten rechts:"
 #define STD_LBL_CORNER_TOP_LEFT "Ecke oben links:"
@@ -30,6 +29,11 @@
 #define STD_INFO_CORNER_BOTTOM_RIGHT "Tragen Sie eine Koordinate für die Ecke unten rechts ein."
 #define STD_INFO_CORNER_TOP_LEFT "Tragen Sie eine Koordinate für die Ecke oben links ein."
 #define STD_INFO_CORNER_TOP_RIGHT  "Tragen Sie eine Koordinate für die Ecke oben rechts ein."
+
+#define STD_LBL_SKIP_PLAYERDATA "Wie viele Punkte sollen beim Zeichnen übersprungen werden:"
+#define STD_LBL_MARKERSIZE_PLAYERDATA "Wie groß sollen die Punkte gezeichnet werden:"
+
+#define STD_LBL_FIELDDATA_TOLERANCE "Wie groß soll die Toleranz des Feldes sein: "
 
 #define STD_CORNER_BOTTOM_LEFT_LONG_TOOLTIP ""
 #define STD_CORNER_BOTTOM_LEFT_LAT_TOOLTIP ""
@@ -42,6 +46,10 @@
 
 #define STD_CORNER_TOP_RIGHT_LONG_TOOLTIP ""
 #define STD_CORNER_TOP_RIGHT_LAT_TOOLTIP ""
+
+#define STD_SKIP_PLAYERDATA_TOOLTIP "Hierbei wird die Anzahl an Punkten beim zeichnen übersprungen.\nVorteil ist eine Steigerung der Leistung beim Zeichnen."
+#define STD_SKIP_MARKERSIZE_TOOLTIP "Sie bestimmen die Größe des Punktes beim Zeichnen."
+#define STD_FIELDDATA_TOLERANCE_TOOLTIP "Der zusätzliche Toleranzbereich des Spielfeldes."
 
 // spieler.h / spieler.cpp
 #define PLAYER_AVERAGE_HEARTRATE "Durchschnittliche Herzrate:"
