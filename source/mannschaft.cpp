@@ -172,13 +172,13 @@ void Mannschaft::showTeamMap(int aTimeStamp)
   foreach (Spieler* player, this->mListSpieler)
   {
     auto data = player->getTransformedPlayerData(aTimeStamp);
-    seriesdata->append(data.mLatitude, data.mLongitude);
+    seriesdata->append(data.mLongitude, data.mLatitude);
 
     QScatterSeries *seriesHeartRate = new QScatterSeries();
 
     seriesHeartRate->setMarkerShape(QScatterSeries::MarkerShapeCircle);
     seriesHeartRate->setMarkerSize(markersize * 2.0);
-    seriesHeartRate->append(data.mLatitude, data.mLongitude);
+    seriesHeartRate->append(data.mLongitude, data.mLatitude);
 
     if(data.mHeartRate >= 160.0)
       seriesHeartRate->setColor(QColor(255, 0, 0)); // red
