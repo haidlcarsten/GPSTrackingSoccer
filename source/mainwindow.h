@@ -42,6 +42,9 @@ public slots:
    */
   void reDrawSpielerList();
 
+  void incrementSlider();
+  void decrementSlider();
+
 
 private slots:
   /**

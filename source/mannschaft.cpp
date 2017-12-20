@@ -26,7 +26,15 @@ Mannschaft::Mannschaft(QObject *parent) : QObject(parent)
 
 void Mannschaft::neuerSpieler(QString aPfad)
 {
+  int factor = this->mListSpieler.count();
+  int colorDistance = 16;
+
+  int color = factor * colorDistance;
+  if(color > 255)
+    color -= 251;
+
   Spieler* person = new Spieler(aPfad);
+  person->setColor(QColor(color, color, color));
   person->setChartWidget(this->mPlayerDataTab);
   person->setSlider(this->mSlider);
   person->setPlayerNumber(QString::number(this->mListSpieler.count() + 1));
@@ -164,18 +172,21 @@ void Mannschaft::showTeamMap(int aTimeStamp)
 {
   double markersize = this->mSettings->value(SETTINGS_MARKERSIZE_PLAYERDATA).toDouble();
 
+  QChart *chart = new QChart();
+
   QScatterSeries *seriesdata = new QScatterSeries();
   seriesdata->setMarkerShape(QScatterSeries::MarkerShapeCircle);
   seriesdata->setMarkerSize(markersize);
-  QChart *chart = new QChart();
 
   foreach (Spieler* player, this->mListSpieler)
   {
     auto data = player->getTransformedPlayerData(aTimeStamp);
     seriesdata->append(data.mLongitude, data.mLatitude);
 
-    QScatterSeries *seriesHeartRate = new QScatterSeries();
+//    seriesdata->setName(player->getPlayerName());
+//    seriesdata->setColor(player->getColor());
 
+    QScatterSeries *seriesHeartRate = new QScatterSeries();
     seriesHeartRate->setMarkerShape(QScatterSeries::MarkerShapeCircle);
     seriesHeartRate->setMarkerSize(markersize * 2.0);
     seriesHeartRate->append(data.mLongitude, data.mLatitude);

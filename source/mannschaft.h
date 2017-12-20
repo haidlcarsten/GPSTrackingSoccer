@@ -34,7 +34,7 @@ public:
    * @return
    * widget to display the players
    */
-  QWidget *displaySpieler();
+  QWidget* displaySpieler();
 
   /**
    * @brief neuerSpieler

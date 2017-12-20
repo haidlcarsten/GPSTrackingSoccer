@@ -70,6 +70,11 @@ QString Spieler::getPlayerName() const
   return this->mSpielerName;
 }
 
+QColor Spieler::getColor()
+{
+  return this->mPlayerColor;
+}
+
 double Spieler::getSpeed()
 {
   return this->mAvgSpeed;

@@ -66,6 +66,25 @@ public:
    */
   QString getPlayerName() const;
 
+
+  /**
+   * @brief setColor
+   * sets the color
+   *
+   * @param aColor
+   * new color
+   */
+  void setColor(QColor aColor) {this->mPlayerColor = aColor;}
+
+  /**
+   * @brief getColor
+   * generates a color
+   *
+   * @return
+   * color
+   */
+  QColor getColor();
+
   /**
    * @brief getSpeed
    * getter for the average speed of the player
@@ -276,6 +295,7 @@ private:
    QString mFilename;
    QString mSpielerName;
    int mSpielerNummer;
+   QColor mPlayerColor;
    ChartWidget* mChartWidget;
    QWidget* mPlayerCoordWidget;
    QSlider* mSlider;

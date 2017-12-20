@@ -17,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->dockWidgetHeim->setWindowTitle(MW_TEAM_HOME_DOCK);
   ui->dockWidgetGegner->setWindowTitle(MW_TEAM_ENEMY_DOCK);
 
+  ui->btnStepUp->setText(MW_BTN_STEP_NEXT);
+  ui->btnStepDown->setText(MW_BTN_STEP_PRE);
+
   ui->tabWidget->setTabText(0, MW_TAB_PLAYER_DATA);
   ui->tabWidget->setTabText(1, MW_TAB_TEAM_DATA_HOME);
   ui->tabWidget->setTabText(2, MW_TAB_TEAM_DATA_ENEMY);
@@ -45,6 +48,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
   connect(ui->horizontalSlider, &QSlider::valueChanged, &mMannschaftHeim, &Mannschaft::showTeamMap);
   connect(ui->horizontalSlider, &QSlider::valueChanged, &mMannschaftGegner, &Mannschaft::showTeamMap);
+
+  connect(ui->btnStepUp, &QPushButton::clicked, this, &MainWindow::incrementSlider);
+  connect(ui->btnStepDown, &QPushButton::clicked, this, &MainWindow::decrementSlider);
+
 
   loadSettings();
 }
@@ -141,6 +148,16 @@ void MainWindow::reDrawSpielerList()
 
   widget = this->mMannschaftGegner.displaySpieler();
   ui->dockWidgetContentsGegner->setWidget(widget);
+}
+
+void MainWindow::incrementSlider()
+{
+  ui->horizontalSlider->setValue(ui->horizontalSlider->value() + 1);
+}
+
+void MainWindow::decrementSlider()
+{
+  ui->horizontalSlider->setValue(ui->horizontalSlider->value() - 1);
 }
 
 void MainWindow::showHelpMenuDialog()

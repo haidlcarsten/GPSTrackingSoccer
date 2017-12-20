@@ -91,5 +91,8 @@
 #define MW_TAB_TEAM_DATA_HOME "Heim-Mannschaft"
 #define MW_TAB_TEAM_DATA_ENEMY "Gegner-Mannschaft"
 #define MW_TAB_HEATMAP "Heatmap"
+
+#define MW_BTN_STEP_NEXT "weiter"
+#define MW_BTN_STEP_PRE "zurück"
 #endif // CONSTS
 
