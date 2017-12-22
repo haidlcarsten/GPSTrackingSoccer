@@ -9,26 +9,25 @@
  */
 struct parsedData
 {
-//    int mTime;
-    int mActivityType;
-    int mLapNumber;
-    double mDistance;
-    double mSpeed;
-    double  mCalories;
-    double mLatitude;
-    double mLongitude;
-    double mElevation;
-    int mHeartRate;
-    int mCycles;
+    int mActivityType = -1;
+    int mLapNumber    = 0;
+    double mDistance  = 0.0;
+    double mSpeed     = 0.0;
+    double  mCalories = 0.0;
+    double mLatitude  = 0.0;
+    double mLongitude = 0.0;
+    double mElevation = 0.0;
+    int mHeartRate    = 0;
+    int mCycles       = 0;
 
     double cRightBottomLong = 0.0;
-    double cRightBottomLat = 0.0;
-    double cRightTopLong = 0.0;
-    double cRightTopLat = 0.0;
-    double cLeftBottomLong = 0.0;
-    double cLeftBottomLat = 0.0;
-    double cLeftTopLong = 0.0;
-    double cLeftTopLat = 0.0;
+    double cRightBottomLat  = 0.0;
+    double cRightTopLong    = 0.0;
+    double cRightTopLat     = 0.0;
+    double cLeftBottomLong  = 0.0;
+    double cLeftBottomLat   = 0.0;
+    double cLeftTopLong     = 0.0;
+    double cLeftTopLat      = 0.0;
 };
 
 

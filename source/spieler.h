@@ -215,30 +215,6 @@ public:
   parsedData getTransformedPlayerData(int aTime);
 
   /**
-   * @brief getSynchedPlayerData
-   * return a synched playerdata
-   *
-   * @param aTime
-   * timestamp
-   *
-   * @return
-   * synched data
-   */
-  parsedData getSynchedPlayerData(int aTime);
-
-  /**
-   * @brief getPlayerData
-   * return a playerdata
-   *
-   * @param aTime
-   * timestamp
-   *
-   * @return
-   * data
-   */
-  parsedData getPlayerData(int aTime);
-
-  /**
    * @brief getMaximumTimestamp
    * the last timestamp
    *

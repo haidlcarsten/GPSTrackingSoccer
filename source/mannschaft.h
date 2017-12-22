@@ -162,6 +162,8 @@ public:
    */
   void recalculateAll();
 
+  Spieler* at(int aPos);
+
 signals:
   /**
    * @brief playersChanged

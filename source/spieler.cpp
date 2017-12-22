@@ -32,9 +32,6 @@ Spieler::Spieler(QString aPfad)
   // at the beginnen playername is equal  to filename
   this->mSpielerName = this->mFilename;
 
-  // parse all data
-  this->parseData();
-
   // getting the timestamp from filename
   // the filename should have the structure "name-yyyymmddThhmmss.csv"
   QString timestamp;
@@ -55,9 +52,6 @@ Spieler::Spieler(QString aPfad)
   // at the begin the timediff is zero
   this->mTimeDiffStartSynchAsInt = 0;
   this->mTimeDiffStartSynch = QTime(0, 0, 0);
-
-  this->calcAverageSpeed();
-  this->calcAverageHeartRate();
 }
 
 QString Spieler::getFileName() const
@@ -82,25 +76,39 @@ double Spieler::getSpeed()
 
 double Spieler::calcAverageSpeed()
 {
-    double speed_sum = 0;
-    foreach (int tstamp, mAllPlayerData.keys())
+    double speed_sum = 0.0f;
+    int devideCount = 0;
+    foreach (int tstamp, this->mTransformedPlayerData.keys())
     {
-      speed_sum = speed_sum + mAllPlayerData.value(tstamp).mSpeed;
+      parsedData data = this->mTransformedPlayerData.value(tstamp);
+      if(data.mActivityType != -1)
+      {
+        speed_sum = speed_sum + data.mSpeed;
+        devideCount++;
+      }
     }
-    mAvgSpeed = speed_sum / mAllPlayerData.lastKey();
+    mAvgSpeed = speed_sum / (float)devideCount;
     return mAvgSpeed;
 }
 
 float Spieler::calcAverageHeartRate()
 {
-    float heartrate_sum = 0;
-    foreach (int tstamp, mAllPlayerData.keys())
-    {
-      heartrate_sum = heartrate_sum + mAllPlayerData.value(tstamp).mHeartRate;
-    }
+  this->mAvgHeartRate = 0.0f;
+  int devideCount = 0;
 
-    mAvgHeartRate = heartrate_sum/ mAllPlayerData.lastKey();
-    return mAvgHeartRate;
+  foreach (int tstamp, this->mTransformedPlayerData.keys())
+  {
+    parsedData data = this->mTransformedPlayerData.value(tstamp);
+    if(data.mActivityType != -1)
+    {
+      this->mAvgHeartRate += data.mHeartRate;
+      devideCount++;
+    }
+  }
+
+  this->mAvgHeartRate /= (float)devideCount;
+
+  return this->mAvgHeartRate;
 }
 
 float Spieler::getHeartRate()
@@ -166,41 +174,43 @@ void Spieler::displayData(bool aDisplay)
 
 void Spieler::synchPlayerData()
 {
+  // parse all data
+  this->parseData();
+
   // if timediff is zero, we dont have to synch
   if(this->mTimeDiffStartSynchAsInt == 0)
   {
     // same data, because no time-shift
     this->mSynchPlayerData = this->mAllPlayerData;
-    return;
   }
-
-  int amountKeys = this->mAllPlayerData.keys().count();
-
-  for(int i = 0; i < amountKeys; i++)
+  else
   {
-    // in this case, we dont need to check the key, because the key is just a number
-    int pos = i + this->mTimeDiffStartSynchAsInt;
-    parsedData data;
-    if(pos <= amountKeys)
-      data = this->mAllPlayerData.value(pos);
+    int amountKeys = this->mAllPlayerData.keys().count();
 
-    // in case we have no mor data but we need more, we have to insert dummy-data
-    if(pos > amountKeys)
+    for(int i = 0; i < amountKeys; i++)
     {
-      data.mActivityType = -1; // mark as invalid
-      data.mLapNumber  = 0;
-      data.mDistance   = 0.0;
-      data.mSpeed      = 0.0;
-      data.mCalories   = 0.0;
-      data.mLatitude   = 0.0;
-      data.mLongitude  = 0.0;
-      data.mElevation  = 0.0;
-      data.mHeartRate  = 0;
-      data.mCycles     = 0;
-   }
+      // in this case, we dont need to check the key, because the key is just a number
+      int pos = i + this->mTimeDiffStartSynchAsInt;
+      parsedData data;
+      if(pos <= amountKeys)
+        data = this->mAllPlayerData.value(pos);
 
-    this->mSynchPlayerData.insert(i, data);
+      // in case we have no mor data but we need more, we have to insert dummy-data
+      if(pos > amountKeys)
+        data.mActivityType = -1; // mark as invalid
+
+      this->mSynchPlayerData.insert(i, data);
+    }
   }
+
+  this->transfromPlayerData();
+
+  this->calcAverageSpeed();
+
+  this->calcAverageHeartRate();
+
+  this->mAllPlayerData.clear();
+  this->mSynchPlayerData.clear();
 }
 
 QWidget *Spieler::generatePlayerDataWidget()
@@ -248,27 +258,15 @@ parsedData Spieler::getTransformedPlayerData(int aTime)
   return this->mTransformedPlayerData.value(aTime);
 }
 
-parsedData Spieler::getSynchedPlayerData(int aTime)
-{
-  return this->mSynchPlayerData.value(aTime);
-}
-
-parsedData Spieler::getPlayerData(int aTime)
-{
-  return this->mAllPlayerData.value(aTime);
-}
-
 int Spieler::getMaximumTimestamp()
 {
-    return this->mSynchPlayerData.count();
+    return this->mTransformedPlayerData.lastKey();
 }
 
 void Spieler::recalculate()
 {
-    this->calcAverageSpeed();
-    this->calcAverageHeartRate();
-    this->mDataIsTransformed = false;
-    this->transfromPlayerData();
+  this->mDataIsTransformed = false;
+  this->synchPlayerData();
 }
 
 void Spieler::transfromPlayerData()
@@ -326,27 +324,6 @@ void Spieler::transfromPlayerData()
         degree = qAbs(ratio);
         dataTransform.cLeftBottomLat     = bottomLeftLat; // reference point y_value
         dataTransform.cLeftBottomLong    = bottomLeftLong; // reference point x_value
-        dataTransform.cLeftTopLat        = (cornerLeftTopLat* qCos(degree) - cornerLeftTopLong * qSin(degree)) + bottomLeftLat ;
-        dataTransform.cLeftTopLong       = (cornerLeftTopLong * qCos(degree) + cornerLeftTopLat * qSin(degree)) + bottomLeftLong;
-        dataTransform.cRightBottomLat    = (cornerRightBottomLat * qCos(degree) - cornerRightBottomLong * qSin(degree)) + bottomLeftLat ;
-        dataTransform.cRightBottomLong   = (cornerRightBottomLong * qCos(degree) + cornerRightBottomLat * qSin(degree)) + bottomLeftLong;
-        dataTransform.cRightTopLat       = (cornerRightTopLat * qCos(degree) - cornerRightTopLong * qSin(degree)) + bottomLeftLat ;
-        dataTransform.cRightTopLong      = (cornerRightTopLong * qCos(degree) + cornerRightTopLat * qSin(degree)) + bottomLeftLong;
-
-        // transform the coordinates
-        double coordLatitude    = (data.mLatitude - bottomLeftLat);
-        double coordLongitude   = (data.mLongitude - bottomLeftLong);
-
-        dataTransform.mLatitude     = (coordLatitude * qCos(degree) - coordLongitude * qSin(degree)) +  bottomLeftLat ;
-        dataTransform.mLongitude    = (coordLongitude * qCos(degree) + coordLatitude * qSin(degree)) + bottomLeftLong;
-
-
-    }
-    else    //rotate in negative direction
-    {
-        degree = ratio;
-        dataTransform.cLeftBottomLat     = bottomLeftLat; // reference point y_value
-        dataTransform.cLeftBottomLong    = bottomLeftLong; // reference point x_value
         dataTransform.cLeftTopLat        = (cornerLeftTopLat* qCos(degree) + cornerLeftTopLong * qSin(degree)) + bottomLeftLat ;
         dataTransform.cLeftTopLong       = (cornerLeftTopLong * qCos(degree) - cornerLeftTopLat * qSin(degree)) + bottomLeftLong;
         dataTransform.cRightBottomLat    = (cornerRightBottomLat * qCos(degree) + cornerRightBottomLong * qSin(degree)) + bottomLeftLat ;
@@ -360,6 +337,27 @@ void Spieler::transfromPlayerData()
 
         dataTransform.mLatitude     = (coordLatitude * qCos(degree) + coordLongitude * qSin(degree)) +  bottomLeftLat ;
         dataTransform.mLongitude    = (coordLongitude * qCos(degree) - coordLatitude * qSin(degree)) + bottomLeftLong;
+
+
+    }
+    else    //rotate in negative direction
+    {
+        degree = ratio;
+        dataTransform.cLeftBottomLat     = bottomLeftLat; // reference point y_value
+        dataTransform.cLeftBottomLong    = bottomLeftLong; // reference point x_value
+        dataTransform.cLeftTopLat        = (cornerLeftTopLat* qCos(degree) - cornerLeftTopLong * qSin(degree)) + bottomLeftLat ;
+        dataTransform.cLeftTopLong       = (cornerLeftTopLong * qCos(degree) + cornerLeftTopLat * qSin(degree)) + bottomLeftLong;
+        dataTransform.cRightBottomLat    = (cornerRightBottomLat * qCos(degree) - cornerRightBottomLong * qSin(degree)) + bottomLeftLat ;
+        dataTransform.cRightBottomLong   = (cornerRightBottomLong * qCos(degree) + cornerRightBottomLat * qSin(degree)) + bottomLeftLong;
+        dataTransform.cRightTopLat       = (cornerRightTopLat * qCos(degree) - cornerRightTopLong * qSin(degree)) + bottomLeftLat ;
+        dataTransform.cRightTopLong      = (cornerRightTopLong * qCos(degree) + cornerRightTopLat * qSin(degree)) + bottomLeftLong;
+
+        // transform the coordinates
+        double coordLatitude    = (data.mLatitude - bottomLeftLat);
+        double coordLongitude   = (data.mLongitude - bottomLeftLong);
+
+        dataTransform.mLatitude     = (coordLatitude * qCos(degree) - coordLongitude * qSin(degree)) +  bottomLeftLat ;
+        dataTransform.mLongitude    = (coordLongitude * qCos(degree) + coordLatitude * qSin(degree)) + bottomLeftLong;
 
     }
 
