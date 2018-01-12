@@ -115,6 +115,8 @@ private:
   void loadSettings();
 
   void determineSliderRange();
+
+  void generateMap();
 };
 
 #endif // MAINWINDOW_H

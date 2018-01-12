@@ -7,6 +7,9 @@
 #include <QSettings>
 #include "settingsdialog.h"
 
+#include <QtCharts>
+
+
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::MainWindow)
@@ -100,6 +103,8 @@ void MainWindow::showFileOpenDialogMannschaftHeim()
 
   this->determineSliderRange();
   this->mMannschaftHeim.showTeamMap(0);
+
+  this->generateMap();
 }
 
 void MainWindow::showFileOpenDialogMannschaftGegner()
@@ -204,6 +209,68 @@ void MainWindow::loadSettings()
 
     this->showSettingsDialog();
   }
+}
+
+void MainWindow::generateMap()
+{
+#ifdef Q_OS_LINUX
+  QSettings settings("." + QApplication::applicationDirPath().left(1) + SETTINGS_FILE_PATH, QSettings::IniFormat);
+#endif
+
+#ifdef Q_OS_WIN
+  QSettings settings(QApplication::applicationDirPath().left(1) + SETTINGS_FILE_PATH, QSettings::IniFormat);
+#endif
+
+  // creates an widget to show the information to an player
+    QWidget* widgetToDisplay; // just a holder
+
+    // if we should display the player or not
+      QGridLayout* lyForm = new QGridLayout;
+
+      QScatterSeries *seriesdata = new QScatterSeries();
+
+      double bottomLeftLong = settings.value(SETTINGS_COORDINATES_BOTTOM_LEFT_LONGITUDE).toDouble();
+      double bottomLeftLat = settings.value(SETTINGS_COORDINATES_BOTTOM_LEFT_LATITUDE).toDouble();
+
+      double bottomrightLong = settings.value(SETTINGS_COORDINATES_BOTTOM_RIGHT_LONGITUDE).toDouble();
+      double bottomrightLat = settings.value(SETTINGS_COORDINATES_BOTTEM_RIGHT_LATITUDE).toDouble();
+
+      double toprightLong = settings.value(SETTINGS_COORDINATES_TOP_RIGHT_LONGITUDE).toDouble();
+      double toprightLat = settings.value(SETTINGS_COORDINATES_TOP_RIGHT_LATITUDE).toDouble();
+
+      double topleftLong = settings.value(SETTINGS_COORDINATES_TOP_LEFT_LONGITUDE).toDouble();
+      double topleftLat = settings.value(SETTINGS_COORDINATES_TOP_LEFT_LATITUDE).toDouble();
+
+      seriesdata->append(bottomLeftLong, bottomLeftLat);
+      seriesdata->append(bottomrightLong, bottomrightLat);
+      seriesdata->append(topleftLong, topleftLat);
+      seriesdata->append(toprightLong, toprightLat);
+
+      QScatterSeries *seriesdata2 = new QScatterSeries();
+      Spieler* person = this->mMannschaftHeim.at(0);
+
+      seriesdata2->append(person->getTransformedPlayerData(0).cLeftBottomLong, person->getTransformedPlayerData(0).cLeftBottomLat);
+      seriesdata2->append(person->getTransformedPlayerData(0).cRightBottomLong, person->getTransformedPlayerData(0).cRightBottomLat);
+      seriesdata2->append(person->getTransformedPlayerData(0).cLeftTopLong, person->getTransformedPlayerData(0).cLeftTopLat);
+      seriesdata2->append(person->getTransformedPlayerData(0).cRightTopLong, person->getTransformedPlayerData(0).cRightTopLat);
+
+      seriesdata2->setColor(QColor(0,255,0));
+
+      QChart *chart = new QChart();
+      chart->addSeries(seriesdata);
+      chart->addSeries(seriesdata2);
+
+      chart->createDefaultAxes();
+      chart->setDropShadowEnabled(false);
+
+      QChartView *chartView = new QChartView(chart);
+
+      lyForm->addWidget(chartView, 0, 0);
+
+      widgetToDisplay = new QWidget;
+      widgetToDisplay->setLayout(lyForm);
+
+      ui->tabHeatmap->setWidget(widgetToDisplay);
 }
 
 void MainWindow::determineSliderRange()

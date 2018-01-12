@@ -48,10 +48,12 @@ void Mannschaft::neuerSpieler(QString aPfad)
 
 void Mannschaft::initTeam()
 {
+  this->calcSynchPoint();
+
   this->calcAverageHeartrate();
   this->calcAverageSpeed();
-  this->calcMeanCornePoint();
-  this->calcSynchPoint();
+  //this->calcMeanCornePoint();
+
   this->displayAllPlayerData();
 
 }
@@ -138,10 +140,7 @@ void Mannschaft::calcSynchPoint()
   mSynchPoint = latestTime;
 
   foreach (Spieler* person, mListSpieler)
-  {
     person->calcSynchTime(mSynchPoint);
-  }
-
 }
 
 int Mannschaft::getMaximumTimeStamp()
@@ -168,6 +167,11 @@ void Mannschaft::recalculateAll()
   emit playersChanged();
 }
 
+Spieler*Mannschaft::at(int aPos)
+{
+  return this->mListSpieler.at(aPos);
+}
+
 void Mannschaft::showTeamMap(int aTimeStamp)
 {
   double markersize = this->mSettings->value(SETTINGS_MARKERSIZE_PLAYERDATA).toDouble();
@@ -181,10 +185,11 @@ void Mannschaft::showTeamMap(int aTimeStamp)
   foreach (Spieler* player, this->mListSpieler)
   {
     auto data = player->getTransformedPlayerData(aTimeStamp);
-    seriesdata->append(data.mLongitude, data.mLatitude);
 
-//    seriesdata->setName(player->getPlayerName());
-//    seriesdata->setColor(player->getColor());
+    if(data.mActivityType == -1) // invalid data
+      continue;
+
+    seriesdata->append(data.mLongitude, data.mLatitude);
 
     QScatterSeries *seriesHeartRate = new QScatterSeries();
     seriesHeartRate->setMarkerShape(QScatterSeries::MarkerShapeCircle);
