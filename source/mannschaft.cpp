@@ -55,6 +55,7 @@ void Mannschaft::initTeam()
   //this->calcMeanCornePoint();
 
   this->displayAllPlayerData();
+
 }
 
 void Mannschaft::displayAllPlayerData()
