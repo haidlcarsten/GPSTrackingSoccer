@@ -56,8 +56,8 @@ Spieler::Spieler(QString aPfad)
   this->mTimeDiffStartSynchAsInt = 0;
   this->mTimeDiffStartSynch = QTime(0, 0, 0);
 
-  this->calcAverageSpeed();
-  this->calcAverageHeartRate();
+    this->calcAverageSpeed();
+    this->calcAverageHeartRate();
 }
 
 QString Spieler::getFileName() const
@@ -129,6 +129,7 @@ void Spieler::displayData(bool aDisplay)
 
     int skip = this->mSettings->value(SETTINGS_SKIP_PLAYERDATA).toInt();
     double markersize = this->mSettings->value(SETTINGS_MARKERSIZE_PLAYERDATA).toDouble();
+
     this->transfromPlayerData();
 
     QScatterSeries *seriesdata = new QScatterSeries();
@@ -217,7 +218,7 @@ QWidget *Spieler::generatePlayerDataWidget()
   layout->addWidget(lblSpielerName, 0, 1);
 
   QLabel* lblSpeedAvg = new QLabel(PLAYER_AVERAGE_SPEED);
-  QLabel* lblSpielerSpeedAvg = new QLabel(QString::number(this->getSpeed()) + " m/s");
+  QLabel* lblSpielerSpeedAvg = new QLabel(QString::number( this->getSpeed()) + " m/s");
   layout->addWidget(lblSpeedAvg, 1, 0);
   layout->addWidget(lblSpielerSpeedAvg, 1, 1);
 
@@ -327,7 +328,7 @@ void Spieler::transfromPlayerData()
         dataTransform.cLeftBottomLat     = bottomLeftLat; // reference point y_value
         dataTransform.cLeftBottomLong    = bottomLeftLong; // reference point x_value
         dataTransform.cLeftTopLat        = (cornerLeftTopLat* qCos(degree) - cornerLeftTopLong * qSin(degree)) + bottomLeftLat ;
-        dataTransform.cLeftTopLong       = (cornerLeftTopLong * qCos(degree) + cornerLeftTopLat * qSin(degree)) + bottomLeftLong;
+        dataTransform.cLeftTopLong       = (cornerLeftTopLong * qCos(degree) - cornerLeftTopLat * qSin(degree)) + bottomLeftLong;
         dataTransform.cRightBottomLat    = (cornerRightBottomLat * qCos(degree) - cornerRightBottomLong * qSin(degree)) + bottomLeftLat ;
         dataTransform.cRightBottomLong   = (cornerRightBottomLong * qCos(degree) + cornerRightBottomLat * qSin(degree)) + bottomLeftLong;
         dataTransform.cRightTopLat       = (cornerRightTopLat * qCos(degree) - cornerRightTopLong * qSin(degree)) + bottomLeftLat ;
@@ -337,29 +338,28 @@ void Spieler::transfromPlayerData()
         double coordLatitude    = (data.mLatitude - bottomLeftLat);
         double coordLongitude   = (data.mLongitude - bottomLeftLong);
 
-        dataTransform.mLatitude     = (coordLatitude * qCos(degree) - coordLongitude * qSin(degree)) +  bottomLeftLat ;
-        dataTransform.mLongitude    = (coordLongitude * qCos(degree) + coordLatitude * qSin(degree)) + bottomLeftLong;
-
+        dataTransform.mLatitude     = (coordLatitude * qCos(degree) - coordLongitude * qSin(degree))  ;
+        dataTransform.mLongitude    = (coordLongitude * qCos(degree) + coordLatitude * qSin(degree)) ;
 
     }
     else    //rotate in negative direction
     {
         degree = ratio;
-        dataTransform.cLeftBottomLat     = bottomLeftLat; // reference point y_value
-        dataTransform.cLeftBottomLong    = bottomLeftLong; // reference point x_value
-        dataTransform.cLeftTopLat        = (cornerLeftTopLat* qCos(degree) + cornerLeftTopLong * qSin(degree)) + bottomLeftLat ;
-        dataTransform.cLeftTopLong       = (cornerLeftTopLong * qCos(degree) - cornerLeftTopLat * qSin(degree)) + bottomLeftLong;
-        dataTransform.cRightBottomLat    = (cornerRightBottomLat * qCos(degree) + cornerRightBottomLong * qSin(degree)) + bottomLeftLat ;
-        dataTransform.cRightBottomLong   = (cornerRightBottomLong * qCos(degree) - cornerRightBottomLat * qSin(degree)) + bottomLeftLong;
-        dataTransform.cRightTopLat       = (cornerRightTopLat * qCos(degree) + cornerRightTopLong * qSin(degree)) + bottomLeftLat ;
-        dataTransform.cRightTopLong      = (cornerRightTopLong * qCos(degree) - cornerRightTopLat * qSin(degree)) + bottomLeftLong;
+        dataTransform.cLeftBottomLat     = 0.00; // reference point y_value
+        dataTransform.cLeftBottomLong    = 0.00; // reference point x_value
+        dataTransform.cLeftTopLat        = (cornerLeftTopLat* qCos(degree) + cornerLeftTopLong * qSin(degree))  ;
+        dataTransform.cLeftTopLong       = (cornerLeftTopLong * qCos(degree) - cornerLeftTopLat * qSin(degree)) ;
+        dataTransform.cRightBottomLat    = (cornerRightBottomLat * qCos(degree) + cornerRightBottomLong * qSin(degree))  ;
+        dataTransform.cRightBottomLong   = (cornerRightBottomLong * qCos(degree) - cornerRightBottomLat * qSin(degree)) ;
+        dataTransform.cRightTopLat       = (cornerRightTopLat * qCos(degree) + cornerRightTopLong * qSin(degree))  ;
+        dataTransform.cRightTopLong      = (cornerRightTopLong * qCos(degree) - cornerRightTopLat * qSin(degree)) ;
 
         // transform the coordinates
         double coordLatitude    = (data.mLatitude - bottomLeftLat);
         double coordLongitude   = (data.mLongitude - bottomLeftLong);
 
-        dataTransform.mLatitude     = (coordLatitude * qCos(degree) + coordLongitude * qSin(degree)) +  bottomLeftLat ;
-        dataTransform.mLongitude    = (coordLongitude * qCos(degree) - coordLatitude * qSin(degree)) + bottomLeftLong;
+        dataTransform.mLatitude     = (coordLatitude * qCos(degree) + coordLongitude * qSin(degree)) ;
+        dataTransform.mLongitude    = (coordLongitude * qCos(degree) - coordLatitude * qSin(degree)) ;
 
     }
 

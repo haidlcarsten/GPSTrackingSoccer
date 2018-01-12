@@ -52,8 +52,8 @@ void Mannschaft::initTeam()
   this->calcAverageSpeed();
   this->calcMeanCornePoint();
   this->calcSynchPoint();
-
   this->displayAllPlayerData();
+
 }
 
 void Mannschaft::displayAllPlayerData()
