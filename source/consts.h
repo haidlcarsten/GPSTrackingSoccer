@@ -83,6 +83,7 @@
 #define MW_HELP_TEXT "Folgt..."
 #define MW_ABOUT_TEXT "Programmiert für medIT im Rahmen eines Seminars im Master Elektrotechnik\nPogrammiert von Kotaro Kurokawa und Carsten Haidl."
 #define MW_NO_SETTINGS "Es sind keine Koordinaten in den Einstellungen eingetragen.\nBitte tragen Sie welche ein, bevor das System genutzt werden kann."
+#define MW_WRONG_TIME "Bitte gebene Sie ein gültiges Format ein."
 
 #define MW_TEAM_HOME_DOCK "Heim-Mannschaft"
 #define MW_TEAM_ENEMY_DOCK "Gegner-Mannschaft"
@@ -94,5 +95,10 @@
 
 #define MW_BTN_STEP_NEXT "weiter"
 #define MW_BTN_STEP_PRE "zurück"
+#define MW_BTN_STEP_PlAY "Play"
+#define MW_BTN_STEP_STOP "Stop / Pause"
+#define MW_LBL_GO_TO_MINUTE "Gehe zu Minute: "
+
+
 #endif // CONSTS
 
