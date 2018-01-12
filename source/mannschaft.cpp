@@ -174,9 +174,27 @@ Spieler*Mannschaft::at(int aPos)
 
 void Mannschaft::showTeamMap(int aTimeStamp)
 {
+  if(this->mListSpieler.count() <= 0)
+    return;
+
   double markersize = this->mSettings->value(SETTINGS_MARKERSIZE_PLAYERDATA).toDouble();
 
+  auto data = this->mListSpieler.at(0)->getTransformedPlayerData(0);
+
   QChart *chart = new QChart();
+
+  QValueAxis* axisX = new QValueAxis;
+  axisX->setRange(data.cLeftBottomLat, data.cLeftTopLat);
+  axisX->setTickCount(1);
+  axisX->setLabelFormat("%.6f");
+
+  QValueAxis* axisY = new QValueAxis;
+  axisY->setRange(data.cLeftBottomLong, data.cRightBottomLong);
+  axisY->setTickCount(1);
+  axisY->setLabelFormat("%.6f");
+
+  chart->addAxis(axisX, Qt::AlignBottom);
+  chart->addAxis(axisY, Qt::AlignLeft);
 
   QScatterSeries *seriesdata = new QScatterSeries();
   seriesdata->setMarkerShape(QScatterSeries::MarkerShapeCircle);
@@ -210,7 +228,6 @@ void Mannschaft::showTeamMap(int aTimeStamp)
 
   chart->addSeries(seriesdata);
 
-  chart->createDefaultAxes();
   chart->setDropShadowEnabled(false);
 
   QChartView *chartView = new QChartView(chart);

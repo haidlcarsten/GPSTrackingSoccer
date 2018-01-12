@@ -53,10 +53,8 @@ Spieler::Spieler(QString aPfad)
   this->mTimeDiffStartSynchAsInt = 0;
   this->mTimeDiffStartSynch = QTime(0, 0, 0);
 
-
   this->calcAverageSpeed();
   this->calcAverageHeartRate();
-
 }
 
 QString Spieler::getFileName() const

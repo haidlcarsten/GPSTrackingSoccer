@@ -5,6 +5,7 @@
 #include "chartwidget.h"
 #include "mannschaft.h"
 #include "ui_mainwindow.h"
+#include <QTimer>
 
 
 namespace Ui {
@@ -41,10 +42,6 @@ public slots:
    * both mannschaft-objects will we drawn new
    */
   void reDrawSpielerList();
-
-  void incrementSlider();
-  void decrementSlider();
-
 
 private slots:
   /**
@@ -83,7 +80,18 @@ private slots:
    */
   void showSettingsDialog();
 
+  void incrementSlider();
 
+  void decrementSlider();
+
+  void goToMinute();
+
+  void startPlayback();
+
+  void stopPlayback();
+
+protected:
+    void timerEvent(QTimerEvent *event);
 
 private:
   Ui::MainWindow *ui;
@@ -91,6 +99,7 @@ private:
 //---------- member-variable ----------
   Mannschaft mMannschaftHeim;
   Mannschaft mMannschaftGegner;
+  QBasicTimer mTimer;
 
 //---------- private auxiliary-functions ----------
 

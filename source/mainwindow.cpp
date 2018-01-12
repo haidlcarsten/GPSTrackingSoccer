@@ -22,6 +22,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
   ui->btnStepUp->setText(MW_BTN_STEP_NEXT);
   ui->btnStepDown->setText(MW_BTN_STEP_PRE);
+  ui->btnPlay->setText(MW_BTN_STEP_PlAY);
+  ui->btnStop->setText(MW_BTN_STEP_STOP);
+  ui->lblGoToMinute->setText(MW_LBL_GO_TO_MINUTE);
 
   ui->tabWidget->setTabText(0, MW_TAB_PLAYER_DATA);
   ui->tabWidget->setTabText(1, MW_TAB_TEAM_DATA_HOME);
@@ -30,6 +33,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
   // show always the first one
   ui->tabWidget->setCurrentIndex(0);
+
+  // for more information see: http://doc.qt.io/archives/qt-4.8/qlineedit.html#inputMask-prop
+  ui->edGoToMinute->setInputMask("999:99");
 
   this->mMannschaftHeim.setUI(this);
   this->mMannschaftGegner.setUI(this);
@@ -55,6 +61,10 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->btnStepUp, &QPushButton::clicked, this, &MainWindow::incrementSlider);
   connect(ui->btnStepDown, &QPushButton::clicked, this, &MainWindow::decrementSlider);
 
+  connect(ui->edGoToMinute, &QLineEdit::editingFinished, this, &MainWindow::goToMinute);
+
+  connect(ui->btnPlay, &QPushButton::clicked, this, &MainWindow::startPlayback);
+  connect(ui->btnStop, &QPushButton::clicked, this, &MainWindow::stopPlayback);
 
   loadSettings();
 }
@@ -157,12 +167,84 @@ void MainWindow::reDrawSpielerList()
 
 void MainWindow::incrementSlider()
 {
+  if(this->mTimer.isActive())
+    this->mTimer.stop();
+
   ui->horizontalSlider->setValue(ui->horizontalSlider->value() + 1);
 }
 
 void MainWindow::decrementSlider()
 {
+  if(this->mTimer.isActive())
+    this->mTimer.stop();
+
   ui->horizontalSlider->setValue(ui->horizontalSlider->value() - 1);
+}
+
+void MainWindow::goToMinute()
+{
+  if(this->mTimer.isActive())
+    this->mTimer.stop();
+
+
+  if(ui->horizontalSlider->maximum() > 0)
+  {
+    QStringList parts = ui->edGoToMinute->text().split(":");
+    QString secondtenpart = "" + parts[1][0];
+    if(secondtenpart.toInt() >= 6)
+    {
+      QMessageBox::information(this,
+                               APPLICATION_NAME,
+                               MW_WRONG_TIME,
+                               QMessageBox::Ok);
+      return;
+    }
+
+    int minute = parts.at(0).toInt();
+    int seconds = parts[1].toInt();
+
+    int step = minute * 60 + seconds;
+    int maximum = ui->horizontalSlider->maximum();
+
+    if(step <= maximum)
+      ui->horizontalSlider->setValue(step);
+    else
+    {
+      int realminute = maximum / 60;
+      int realsecond = maximum % 60;
+
+      QString messagetime = " (0:00 - " + QString::number(realminute) + ":" + QString::number(realsecond) + ")";
+
+      QString message = MW_WRONG_TIME;
+      message = message.append(messagetime);
+
+      QMessageBox::information(this,
+                               APPLICATION_NAME,
+                               message,
+                               QMessageBox::Ok);
+      return;
+    }
+  }
+}
+
+void MainWindow::startPlayback()
+{
+  if(this->mTimer.isActive())
+    this->mTimer.stop();
+
+  this->mTimer.start(100, this);
+}
+
+void MainWindow::stopPlayback()
+{
+  if(this->mTimer.isActive())
+    this->mTimer.stop();
+}
+
+void MainWindow::timerEvent(QTimerEvent* event)
+{
+  if(event->timerId() == this->mTimer.timerId())
+    ui->horizontalSlider->setValue(ui->horizontalSlider->value() + 1);
 }
 
 void MainWindow::showHelpMenuDialog()
