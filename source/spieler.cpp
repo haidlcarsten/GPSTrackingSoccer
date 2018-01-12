@@ -52,11 +52,11 @@ Spieler::Spieler(QString aPfad)
   // at the begin the timediff is zero
   this->mTimeDiffStartSynchAsInt = 0;
   this->mTimeDiffStartSynch = QTime(0, 0, 0);
-==== BASE ====
+
 
   this->calcAverageSpeed();
   this->calcAverageHeartRate();
-==== BASE ====
+
 }
 
 QString Spieler::getFileName() const
