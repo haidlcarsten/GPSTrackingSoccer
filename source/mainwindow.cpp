@@ -339,7 +339,7 @@ void MainWindow::generateMap()
       seriesdata2->setColor(QColor(0,255,0));
 
       QChart *chart = new QChart();
-      chart->addSeries(seriesdata);
+      //chart->addSeries(seriesdata);
       chart->addSeries(seriesdata2);
 
       chart->createDefaultAxes();

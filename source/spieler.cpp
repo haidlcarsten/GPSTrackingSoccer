@@ -162,6 +162,22 @@ void Spieler::displayData(bool aDisplay)
     chart->createDefaultAxes();
     chart->setDropShadowEnabled(false);
 
+    //Add background image for plot Area
+
+    QPixmap field("C:/Users/kotar/Desktop/git_ch/GPSTrackingSoccer/fussballplatz-fertig2.jpg");
+
+    qreal width = chart->plotArea().width();
+    qreal height = chart->plotArea().height();
+
+    field.scaled(QSize(width,height));
+
+//    QPainter painter(&field);
+//    QPointF TopLeft = chart->plotArea().topLeft();
+//    painter.drawImage(TopLeft,&field);
+
+    chart->setPlotAreaBackgroundBrush(field);
+    chart->setPlotAreaBackgroundVisible(true);
+
     QChartView *chartView = new QChartView(chart);
 
     lyForm->addWidget(datawidget, 0, 0);
@@ -338,8 +354,9 @@ void Spieler::transfromPlayerData()
     //rotate in positive direction
     if (ratio < 0)
     {
-        degree = qAbs(ratio) ;
+        degree = qAbs(rad) ;
 
+        //calculation in radiant-mod
 
             dataTransform.cLeftBottomLat     = 0.00 ; // reference point y_value
             dataTransform.cLeftBottomLong    = 0.00 ; // reference point x_value
@@ -376,7 +393,7 @@ void Spieler::transfromPlayerData()
     }
     else    //rotate in negative direction
     {
-        degree = ratio ;
+        degree = rad ;
         dataTransform.cLeftBottomLat     = 0.00; // reference point y_value
         dataTransform.cLeftBottomLong    = 0.00; // reference point x_value
         dataTransform.cLeftTopLat        = (cltopLat * qCos(degree) - cltopLong * qSin(degree))  ;
