@@ -184,17 +184,14 @@ void Mannschaft::showTeamMap(int aTimeStamp)
   QChart *chart = new QChart();
 
   QValueAxis* axisX = new QValueAxis;
-  axisX->setRange(data.cLeftBottomLat, data.cLeftTopLat);
+  axisX->setRange(data.cLeftBottomLong, data.cRightBottomLong);
   axisX->setTickCount(1);
   axisX->setLabelFormat("%.6f");
 
   QValueAxis* axisY = new QValueAxis;
-  axisY->setRange(data.cLeftBottomLong, data.cRightBottomLong);
+  axisY->setRange(data.cLeftBottomLat, data.cLeftTopLat);
   axisY->setTickCount(1);
   axisY->setLabelFormat("%.6f");
-
-  chart->addAxis(axisX, Qt::AlignBottom);
-  chart->addAxis(axisY, Qt::AlignLeft);
 
   QScatterSeries *seriesdata = new QScatterSeries();
   seriesdata->setMarkerShape(QScatterSeries::MarkerShapeCircle);
@@ -223,12 +220,27 @@ void Mannschaft::showTeamMap(int aTimeStamp)
     else if(data.mHeartRate < 90.0)
       seriesHeartRate->setColor(QColor(51, 255,0)); // green
 
-    chart->addSeries(seriesHeartRate);
+    //chart->addSeries(seriesHeartRate);
   }
 
   chart->addSeries(seriesdata);
+  chart->createDefaultAxes();
+
+  chart->setAxisX(axisX, seriesdata);
+  chart->setAxisY(axisY, seriesdata);
 
   chart->setDropShadowEnabled(false);
+
+  QPixmap field("C:/Users/kotar/Desktop/git_ch/GPSTrackingSoccer/fussballplatz-fertig2.jpg");
+
+  QSizeF  dimension = chart->size();
+  qreal width = dimension.width();
+  qreal height = dimension.height();
+
+  field.scaled(QSize(width,height));
+
+  chart->setPlotAreaBackgroundBrush(field);
+  chart->setPlotAreaBackgroundVisible(true);
 
   QChartView *chartView = new QChartView(chart);
 

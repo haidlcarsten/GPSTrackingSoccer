@@ -162,23 +162,39 @@ void Spieler::displayData(bool aDisplay)
     chart->createDefaultAxes();
     chart->setDropShadowEnabled(false);
 
+    parsedData data = this->mTransformedPlayerData.value(0);
+    QValueAxis* axisX = new QValueAxis;
+    axisX->setRange(data.cLeftBottomLong, data.cRightBottomLong);
+    axisX->setTickCount(1);
+    axisX->setLabelFormat("%.6f");
+
+    QValueAxis* axisY = new QValueAxis;
+    axisY->setRange(data.cLeftBottomLat, data.cLeftTopLat);
+    axisY->setTickCount(1);
+    axisY->setLabelFormat("%.6f");
+
+    chart->setAxisX(axisX, seriesdata);
+    chart->setAxisY(axisY, seriesdata);
+
+    QChartView *chartView = new QChartView(chart);
     //Add background image for plot Area
 
     QPixmap field("C:/Users/kotar/Desktop/git_ch/GPSTrackingSoccer/fussballplatz-fertig2.jpg");
 
-    qreal width = chart->plotArea().width();
-    qreal height = chart->plotArea().height();
+    QSizeF  dimension = chart->size();
+    qreal width = dimension.width();
+    qreal height = dimension.height();
 
-    field.scaled(QSize(width,height));
+   field.scaled(QSize(width,height));
 
+    if(&field != NULL)
+    {
+        chart->setPlotAreaBackgroundBrush(field);
+        chart->setPlotAreaBackgroundVisible(true);
+    }
 //    QPainter painter(&field);
 //    QPointF TopLeft = chart->plotArea().topLeft();
 //    painter.drawImage(TopLeft,&field);
-
-    chart->setPlotAreaBackgroundBrush(field);
-    chart->setPlotAreaBackgroundVisible(true);
-
-    QChartView *chartView = new QChartView(chart);
 
     lyForm->addWidget(datawidget, 0, 0);
     lyForm->addWidget(chartView, 1, 0);
