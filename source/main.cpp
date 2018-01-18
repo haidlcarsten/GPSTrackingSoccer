@@ -17,6 +17,5 @@ int main(int argc, char *argv[])
   w.setWindowTitle("GPS Tracking Visualisation");
 
   w.show();
-
   return a.exec();
 }

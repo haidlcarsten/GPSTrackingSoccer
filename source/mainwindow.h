@@ -35,6 +35,7 @@ public:
    * default-destructor
    */
   ~MainWindow();
+
 public slots:
 
   /**
@@ -94,7 +95,7 @@ protected:
     void timerEvent(QTimerEvent *event);
 
 private:
-  Ui::MainWindow *ui;
+    Ui::MainWindow *ui;
 
 //---------- member-variable ----------
   Mannschaft mMannschaftHeim;

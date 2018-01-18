@@ -88,3 +88,6 @@ win32 {
     SVNN = $$system("git describe --tags")
     DEFINES += NOMINMAX
 }
+
+RESOURCES += \
+    images.qrc

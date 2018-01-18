@@ -1,5 +1,6 @@
 #include "spieler.h"
 #include "consts.h"
+#include "mainwindow.h"
 #include <QLabel>
 #include <QFormLayout>
 #include <QString>
@@ -10,7 +11,7 @@
 #include <QFileInfo>
 #include <QDebug>
 #include <QtMath>
-
+#include <QImage>
 #include <QtCharts>
 
 Spieler::Spieler(QString aPfad)
@@ -123,7 +124,6 @@ float Spieler::getHeartRate()
 void Spieler::setSlider(QSlider *aSlider)
 {
   this->mSlider = aSlider;
-  connect(this->mSlider, &QSlider::valueChanged, this, &Spieler::displayData);
 }
 
 void Spieler::displayData(bool aDisplay)
@@ -134,6 +134,8 @@ void Spieler::displayData(bool aDisplay)
   // if we should display the player or not
   if(aDisplay)
   {
+    connect(this->mSlider, &QSlider::valueChanged, this, &Spieler::displayData);
+
     QGridLayout* lyForm = new QGridLayout;
 
     auto datawidget = this->generatePlayerDataWidget();
@@ -166,46 +168,58 @@ void Spieler::displayData(bool aDisplay)
     QValueAxis* axisX = new QValueAxis;
     axisX->setRange(data.cLeftBottomLong, data.cRightBottomLong);
     axisX->setTickCount(1);
-    axisX->setLabelFormat("%.6f");
+    axisX->setLabelFormat("%.8f");
 
     QValueAxis* axisY = new QValueAxis;
     axisY->setRange(data.cLeftBottomLat, data.cLeftTopLat);
     axisY->setTickCount(1);
-    axisY->setLabelFormat("%.6f");
+    axisY->setLabelFormat("%.8f");
 
     chart->setAxisX(axisX, seriesdata);
     chart->setAxisY(axisY, seriesdata);
 
     QChartView *chartView = new QChartView(chart);
-    //Add background image for plot Area
-
-    QPixmap field("C:/Users/kotar/Desktop/git_ch/GPSTrackingSoccer/fussballplatz-fertig2.jpg");
-
-    QSizeF  dimension = chart->size();
-    qreal width = dimension.width();
-    qreal height = dimension.height();
-
-   field.scaled(QSize(width,height));
-
-    if(&field != NULL)
-    {
-        chart->setPlotAreaBackgroundBrush(field);
-        chart->setPlotAreaBackgroundVisible(true);
-    }
-//    QPainter painter(&field);
-//    QPointF TopLeft = chart->plotArea().topLeft();
-//    painter.drawImage(TopLeft,&field);
+    chartView->setRenderHint(QPainter::Antialiasing);
 
     lyForm->addWidget(datawidget, 0, 0);
     lyForm->addWidget(chartView, 1, 0);
 
     widgetToDisplay = new QWidget;
     widgetToDisplay->setLayout(lyForm);
+
+    this->mChartWidget->setWidget(widgetToDisplay);
+
+    //Add background image for plot Area
+    QImage  field(":/soccerfield");
+
+    QSizeF dimension = chart->plotArea().size();
+    qreal width = dimension.width();
+    qreal height = dimension.height();
+    qreal viewWidth = this->mChartWidget->width();
+    qreal viewHeight = this->mChartWidget->height();
+
+    //scale the image to fit plot area
+    field = field.scaled(QSize(width, height));
+
+    //We have to translate the image because setPlotAreaBackGround
+    //starts the image in the top left corner of the view not the
+    //plot area. So, to offset we will make a new image the size of
+    //view and offset our image within that image with white
+    QImage translated(viewWidth, viewHeight, QImage::Format_ARGB32);
+    translated.fill(Qt::white);
+    QPainter painter(&translated);
+    QPointF topLeft = chart->plotArea().topLeft();
+    painter.drawImage(topLeft, field);
+
+    //display image in background
+    chart->setPlotAreaBackgroundBrush(translated);
+    chart->setPlotAreaBackgroundVisible(true);
   }
   else
-    widgetToDisplay = this->mChartWidget->getDefaultWidget();
-
-  this->mChartWidget->setWidget(widgetToDisplay);
+  {
+    disconnect(this->mSlider, &QSlider::valueChanged, this, &Spieler::displayData);
+    this->mChartWidget->setWidget(this->mChartWidget->getDefaultWidget());
+  }
 }
 
 void Spieler::synchPlayerData()

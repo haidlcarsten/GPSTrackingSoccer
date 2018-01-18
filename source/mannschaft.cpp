@@ -36,8 +36,8 @@ void Mannschaft::neuerSpieler(QString aPfad)
   Spieler* person = new Spieler(aPfad);
   person->setColor(QColor(color, color, color));
   person->setChartWidget(this->mPlayerDataTab);
-  person->setSlider(this->mSlider);
   person->setPlayerNumber(QString::number(this->mListSpieler.count() + 1));
+  person->setSlider(this->mSlider);
 
   this->mListSpieler.append(person);
 
@@ -228,22 +228,36 @@ void Mannschaft::showTeamMap(int aTimeStamp)
 
   chart->setAxisX(axisX, seriesdata);
   chart->setAxisY(axisY, seriesdata);
-
   chart->setDropShadowEnabled(false);
-
-  QPixmap field("C:/Users/kotar/Desktop/git_ch/GPSTrackingSoccer/fussballplatz-fertig2.jpg");
-
-  QSizeF  dimension = chart->size();
-  qreal width = dimension.width();
-  qreal height = dimension.height();
-
-  field.scaled(QSize(width,height));
-
-  chart->setPlotAreaBackgroundBrush(field);
-  chart->setPlotAreaBackgroundVisible(true);
-
   QChartView *chartView = new QChartView(chart);
 
+  this->mTeamDataTab->setWidget(chartView);
+
+  //Add background image for plot Area
+  QImage field(":/soccerfield");
+
+  QSizeF dimension = chart->plotArea().size();
+  qreal width = dimension.width();
+  qreal height = dimension.height();
+  qreal viewWidth = this->mTeamDataTab->width();
+  qreal viewHeight = this->mTeamDataTab->height();
+
+  //scale the image to fit plot area
+  field = field.scaled(QSize(width, height));
+
+  //We have to translate the image because setPlotAreaBackGround
+  //starts the image in the top left corner of the view not the
+  //plot area. So, to offset we will make a new image the size of
+  //view and offset our image within that image with white
+  QImage translated(viewWidth, viewHeight, QImage::Format_ARGB32);
+  translated.fill(Qt::white);
+  QPainter painter(&translated);
+  QPointF topLeft = chart->plotArea().topLeft();
+  painter.drawImage(topLeft, field);
+
+  //display image in background
+  chart->setPlotAreaBackgroundBrush(translated);
+  chart->setPlotAreaBackgroundVisible(true);
   this->mTeamDataTab->setWidget(chartView);
 }
 
