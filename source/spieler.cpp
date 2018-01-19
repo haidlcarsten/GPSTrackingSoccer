@@ -134,7 +134,11 @@ void Spieler::displayData(bool aDisplay)
   // if we should display the player or not
   if(aDisplay)
   {
-    connect(this->mSlider, &QSlider::valueChanged, this, &Spieler::displayData);
+    if(! this->mIsConnected)
+    {
+      this->mIsConnected = true;
+      connect(this->mSlider, &QSlider::valueChanged, this, &Spieler::displayData);
+    }
 
     QGridLayout* lyForm = new QGridLayout;
 
@@ -217,6 +221,7 @@ void Spieler::displayData(bool aDisplay)
   }
   else
   {
+    this->mIsConnected = false;
     disconnect(this->mSlider, &QSlider::valueChanged, this, &Spieler::displayData);
     this->mChartWidget->setWidget(this->mChartWidget->getDefaultWidget());
   }

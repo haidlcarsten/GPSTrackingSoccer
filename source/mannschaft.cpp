@@ -304,7 +304,7 @@ QWidget* Mannschaft::displaySpieler()
     // add the elements to the widget
     lyPerson->addWidget(cbSelect);
     lyPerson->addWidget(edName);
-    lyPerson->addWidget(edPlayerNumber);
+    //lyPerson->addWidget(edPlayerNumber);
 
     lyGbrTeam->addRow(lyPerson);
 

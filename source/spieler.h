@@ -293,6 +293,9 @@ private:
    int mTimeDiffStartSynchAsInt;
    QTime mTimeDiffStartSynch;
 
+   bool mIsConnected = false;
+
+
 //---------- private auxiliary-functions ----------
 
    /**
