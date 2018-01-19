@@ -6,6 +6,9 @@
 #include "spieler.h"
 #include "chartwidget.h"
 
+#include <QSizeF>
+#include<QImage>
+
 class QLayout;
 class MainWindow;
 
@@ -201,6 +204,9 @@ private:
   QPair<double,double> mCornerBottomRight;
   QPair<double,double> mCornerTopLeft;
   QPair<double,double> mCornerTopRight;
+
+  QSizeF mLastDimension;
+  QImage mField;
 
 
   /**
