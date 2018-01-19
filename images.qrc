@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="soccerfield">fussballplatz-fertig2.jpg</file>
+    </qresource>
+</RCC>
