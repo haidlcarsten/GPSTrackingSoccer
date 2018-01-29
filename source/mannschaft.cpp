@@ -22,6 +22,10 @@ Mannschaft::Mannschaft(QObject *parent) : QObject(parent)
 
   this->mAvgHeartrate = 0;
   this->mAvgSpeed = 0;
+
+  this->mField.load(":/soccerfield");
+  this->mLastDimension.setHeight(-1);
+  this->mLastDimension.setWidth(-1);
 }
 
 void Mannschaft::neuerSpieler(QString aPfad)
@@ -233,30 +237,37 @@ void Mannschaft::showTeamMap(int aTimeStamp)
 
   this->mTeamDataTab->setWidget(chartView);
 
-  //Add background image for plot Area
-  QImage field(":/soccerfield");
-
   QSizeF dimension = chart->plotArea().size();
-  qreal width = dimension.width();
-  qreal height = dimension.height();
-  qreal viewWidth = this->mTeamDataTab->width();
-  qreal viewHeight = this->mTeamDataTab->height();
+  if(this->mLastDimension != dimension)
+  {
+      //Add background image for plot Area
+      QImage field(":/soccerfield");
 
-  //scale the image to fit plot area
-  field = field.scaled(QSize(width, height));
+      qreal width = dimension.width();
+      qreal height = dimension.height();
+      qreal viewWidth = this->mTeamDataTab->width();
+      qreal viewHeight = this->mTeamDataTab->height();
 
-  //We have to translate the image because setPlotAreaBackGround
-  //starts the image in the top left corner of the view not the
-  //plot area. So, to offset we will make a new image the size of
-  //view and offset our image within that image with white
-  QImage translated(viewWidth, viewHeight, QImage::Format_ARGB32);
-  translated.fill(Qt::white);
-  QPainter painter(&translated);
-  QPointF topLeft = chart->plotArea().topLeft();
-  painter.drawImage(topLeft, field);
+      //scale the image to fit plot area
+      field = field.scaled(QSize(width, height));
+
+      //We have to translate the image because setPlotAreaBackGround
+      //starts the image in the top left corner of the view not the
+      //plot area. So, to offset we will make a new image the size of
+      //view and offset our image within that image with white
+      QImage translated(viewWidth, viewHeight, QImage::Format_ARGB32);
+      translated.fill(Qt::white);
+      QPainter painter(&translated);
+      QPointF topLeft = chart->plotArea().topLeft();
+      painter.drawImage(topLeft, field);
+
+      this->mLastDimension = dimension;
+      this->mField = translated;
+  }
+
 
   //display image in background
-  chart->setPlotAreaBackgroundBrush(translated);
+  chart->setPlotAreaBackgroundBrush(this->mField);
   chart->setPlotAreaBackgroundVisible(true);
   this->mTeamDataTab->setWidget(chartView);
 }
