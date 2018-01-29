@@ -81,14 +81,34 @@ private slots:
    */
   void showSettingsDialog();
 
+  /**
+   * @brief incrementSlider
+   * will increment the slider by one
+   */
   void incrementSlider();
 
+  /**
+   * @brief incrementSlider
+   * will decrement the slider by one
+   */
   void decrementSlider();
 
+  /**
+   * @brief goToMinute
+   *
+   */
   void goToMinute();
 
+  /**
+   * @brief startPlayback
+   * starts to increment the slider by one with an timer
+   */
   void startPlayback();
 
+  /**
+   * @brief stopPlayback
+   * stops the playback
+   */
   void stopPlayback();
 
 protected:
@@ -124,8 +144,16 @@ private:
    */
   void loadSettings();
 
+  /**
+   * @brief determineSliderRange
+   * get the absolute range for the slider from all players
+   */
   void determineSliderRange();
 
+  /**
+   * @brief generateMap
+   * generates an widget, to check the transformition
+   */
   void generateMap();
 };
 

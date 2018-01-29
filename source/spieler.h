@@ -200,6 +200,12 @@ public:
   QWidget*  generatePlayerDataWidget();
 
 
+  /**
+   * @brief getPlayerNumber
+   * returns the playernumber
+   *
+   * @return number
+   */
   int getPlayerNumber();
 
   /**

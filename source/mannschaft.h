@@ -209,6 +209,11 @@ private:
    */
   void initTeam();
 
+  /**
+   * @brief displayAllPlayerData
+   * creates an widget to display all player data.
+   * The widget will placed directly
+   */
   void displayAllPlayerData();
 
 };
